@@ -3,13 +3,14 @@ package com.hsu.travelmaker.global.controller;
 import com.hsu.travelmaker.global.response.CustomApiResponse;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class CustomErrorController {
+public class CustomErrorController implements ErrorController {
 
     @RequestMapping("/error")
     public ResponseEntity<CustomApiResponse<?>> handleError(HttpServletRequest request) {
