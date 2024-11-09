@@ -1,5 +1,6 @@
 package com.hsu.travelmaker.domain.post.web.controller;
 
+import com.hsu.travelmaker.domain.post.service.PostServiceImpl;
 import com.hsu.travelmaker.domain.post.web.dto.PostCreateDto;
 import com.hsu.travelmaker.global.response.CustomApiResponse;
 import lombok.RequiredArgsConstructor;

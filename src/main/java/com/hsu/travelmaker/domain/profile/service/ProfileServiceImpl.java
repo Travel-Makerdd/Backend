@@ -39,7 +39,7 @@ public class ProfileServiceImpl implements ProfileService {
         User user = userRepository.findById(Long.parseLong(currentUserId))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자가 존재하지 않습니다."));
 
-        Profile profile = profileRepository.findByUserUserId(user.getUserId())
+        Profile profile = profileRepository.findByUser_UserId(user.getUserId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "프로필이 존재하지 않습니다."));
 
         // 프로필 정보 업데이트
@@ -72,12 +72,12 @@ public class ProfileServiceImpl implements ProfileService {
         User user = userRepository.findById(Long.parseLong(currentUserId))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자가 존재하지 않습니다."));
 
-        Profile profile = profileRepository.findByUserUserId(user.getUserId())
+        Profile profile = profileRepository.findByUser_UserId(user.getUserId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "프로필이 존재하지 않습니다."));
 
         // 반환 데이터
         ProfileCheckDto data = new ProfileCheckDto();
-        data.setUserId(profile.getUserId().getUserId());
+        data.setUserId(profile.getUser().getUserId());
         data.setProfileName(profile.getProfileName());
         data.setProfileRole(profile.getProfileRole());
         data.setProfileBio(profile.getProfileBio());
