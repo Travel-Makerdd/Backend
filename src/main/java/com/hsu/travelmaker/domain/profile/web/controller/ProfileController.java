@@ -22,8 +22,8 @@ public class ProfileController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<CustomApiResponse<?>> getProfile(@RequestBody ProfileCheckDto dto) {
-        return profileService.getProfile(dto);
+    public ResponseEntity<CustomApiResponse<?>> getProfile() {
+        return profileService.getProfile();
     }
 
 }
