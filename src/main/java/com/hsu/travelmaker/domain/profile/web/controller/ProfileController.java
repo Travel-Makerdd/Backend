@@ -23,4 +23,9 @@ public class ProfileController {
         return profileService.updateProfile(dto);
     }
 
+    @PostMapping("/check")
+    public ResponseEntity<CustomApiResponse<?>> getProfile(@RequestBody ProfileCheckDto dto) {
+        return profileService.getProfile(dto);
+    }
+
 }
