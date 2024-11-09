@@ -23,4 +23,7 @@ public class User extends BaseEntity {
 
     @Column(name = "user_password", nullable = false)
     private String userPassword; // 사용자 비밀번호
+
+    @Column(name = "user_nickname", nullable = false)
+    private String userNickname; // 사용자 닉네임
 }

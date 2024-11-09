@@ -22,14 +22,22 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public ResponseEntity<CustomApiResponse<?>> signUp(SignUpDto dto) {
 
+        // 이메일 중복 확인
         if (userRepository.findByUserEmail(dto.getUserEmail()).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(CustomApiResponse.createFailWithout(409, "이미 등록된 이메일입니다."));
         }
 
+        // 비밀번호 일치 확인
+        if (!dto.getUserPassword().equals(dto.getConfirmPassword())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(CustomApiResponse.createFailWithout(400, "비밀번호가 일치하지 않습니다."));
+        }
+
         User user = User.builder()
                 .userEmail(dto.getUserEmail())
                 .userPassword(passwordEncoder.encode(dto.getUserPassword()))
+                .userNickname(dto.getUserNickname())
                 .build();
         userRepository.save(user);
 
