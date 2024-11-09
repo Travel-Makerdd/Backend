@@ -1,6 +1,6 @@
 package com.hsu.travelmaker.global.security.jwt.filter;
 
-import com.hsu.travelmaker.global.security.jwt.util.JwtTokenProvider;
+import com.hsu.travelmaker.global.security.jwt.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;

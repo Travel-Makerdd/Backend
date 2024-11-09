@@ -1,7 +1,7 @@
 package com.hsu.travelmaker.global.security.config;
 
 import com.hsu.travelmaker.global.security.jwt.filter.JwtTokenFilter;
-import com.hsu.travelmaker.global.security.jwt.util.JwtTokenProvider;
+import com.hsu.travelmaker.global.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
