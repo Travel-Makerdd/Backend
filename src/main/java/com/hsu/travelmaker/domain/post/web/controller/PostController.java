@@ -5,10 +5,7 @@ import com.hsu.travelmaker.domain.post.web.dto.PostCreateDto;
 import com.hsu.travelmaker.global.response.CustomApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/post")
@@ -20,6 +17,11 @@ public class PostController {
     @PostMapping("/create")
     public ResponseEntity<CustomApiResponse<?>> createPost(@RequestBody PostCreateDto dto) {
         return postService.createPost(dto);
+    }
+
+    @GetMapping("/{postId}")
+    public ResponseEntity<CustomApiResponse<?>> getPost(@PathVariable Long postId) {
+        return postService.getPost(postId);
     }
 
 }
