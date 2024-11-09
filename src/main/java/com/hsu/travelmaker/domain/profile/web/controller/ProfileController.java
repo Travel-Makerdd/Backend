@@ -16,10 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProfileController {
 
     private final ProfileServiceImpl profileService;
+    
 
     @PostMapping("/update")
-    public ResponseEntity<CustomApiResponse<?>> profileUpdate(@RequestBody ProfileUpdateDto dto) {
-        return profileService.profileUpdate(dto);
+    public ResponseEntity<CustomApiResponse<?>> updateProfile(@RequestBody ProfileUpdateDto dto) {
+        return profileService.updateProfile(dto);
     }
 
 }

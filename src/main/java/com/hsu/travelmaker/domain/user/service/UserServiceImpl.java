@@ -1,5 +1,8 @@
 package com.hsu.travelmaker.domain.user.service;
 
+import com.hsu.travelmaker.domain.profile.entity.Profile;
+import com.hsu.travelmaker.domain.profile.entity.Role;
+import com.hsu.travelmaker.domain.profile.repository.ProfileRepository;
 import com.hsu.travelmaker.domain.user.entity.User;
 import com.hsu.travelmaker.domain.user.repository.UserRepository;
 import com.hsu.travelmaker.domain.user.web.dto.SignInDto;
@@ -18,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final ProfileRepository profileRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -43,6 +47,17 @@ public class UserServiceImpl implements UserService {
                 .userNickname(dto.getUserNickname())
                 .build();
         userRepository.save(user);
+
+        // 빈 프로필 생성 및 저장
+        Profile profile = Profile.builder()
+                .user(user)
+                .profileName("")
+                .profileRole(Role.DEFAULT)
+                .profileBio("")
+                .profileStyle("")
+                .profileFavorite("")
+                .build();
+        profileRepository.save(profile);
 
         return ResponseEntity.ok(CustomApiResponse.createSuccess(201, null, "사용자 등록에 성공했습니다."));
     }

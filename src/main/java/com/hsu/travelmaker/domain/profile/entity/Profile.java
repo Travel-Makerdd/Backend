@@ -8,6 +8,7 @@ import lombok.*;
 @Entity
 @Table(name = "PROFILE")
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
