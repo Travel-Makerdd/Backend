@@ -5,7 +5,7 @@ import com.hsu.travelmaker.domain.user.repository.UserRepository;
 import com.hsu.travelmaker.domain.user.web.dto.SignInDto;
 import com.hsu.travelmaker.domain.user.web.dto.SignUpDto;
 import com.hsu.travelmaker.global.response.CustomApiResponse;
-import com.hsu.travelmaker.global.security.jwt.util.JwtTokenProvider;
+import com.hsu.travelmaker.global.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package com.hsu.travelmaker.global.security.jwt.util;
+package com.hsu.travelmaker.global.security.jwt;
 
 import com.hsu.travelmaker.global.security.service.MyUserDetails;
 import io.jsonwebtoken.Claims;
