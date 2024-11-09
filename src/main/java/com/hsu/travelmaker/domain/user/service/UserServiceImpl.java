@@ -2,8 +2,10 @@ package com.hsu.travelmaker.domain.user.service;
 
 import com.hsu.travelmaker.domain.user.entity.User;
 import com.hsu.travelmaker.domain.user.repository.UserRepository;
+import com.hsu.travelmaker.domain.user.web.dto.SignInDto;
 import com.hsu.travelmaker.domain.user.web.dto.SignUpDto;
 import com.hsu.travelmaker.global.response.CustomApiResponse;
+import com.hsu.travelmaker.global.security.jwt.util.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     @Transactional
@@ -42,6 +45,25 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         return ResponseEntity.ok(CustomApiResponse.createSuccess(201, null, "사용자 등록에 성공했습니다."));
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<CustomApiResponse<?>> signIn(SignInDto dto) {
+        // 이메일로 사용자 조회
+        User user = userRepository.findByUserEmail(dto.getUserEmail())
+                .orElseThrow(() -> new RuntimeException("가입되지 않은 이메일입니다."));
+
+        // 비밀번호 검증
+        if (!passwordEncoder.matches(dto.getUserPassword(), user.getUserPassword())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(CustomApiResponse.createFailWithout(401, "비밀번호가 일치하지 않습니다."));
+        }
+
+        // 토큰 생성
+        String token = jwtTokenProvider.createToken(user.getUserId().toString());
+
+        return ResponseEntity.ok(CustomApiResponse.createSuccess(200, token, "로그인에 성공했습니다."));
     }
 
 }
