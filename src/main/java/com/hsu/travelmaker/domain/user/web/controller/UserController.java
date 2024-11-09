@@ -26,7 +26,7 @@ public class UserController {
     }
 
     @PostMapping("/signIn")
-    public ResponseEntity<CustomApiResponse<?>> signUp(@Valid @RequestBody SignInDto dto) {
+    public ResponseEntity<CustomApiResponse<?>> signIn(@RequestBody SignInDto dto) {
         return userService.signIn(dto);
     }
 
