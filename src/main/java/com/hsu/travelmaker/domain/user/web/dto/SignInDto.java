@@ -8,18 +8,12 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class SignUpDto {
+public class SignInDto {
 
     @NotBlank(message = "이메일을 입력해주세요.")
     private String userEmail;
 
     @NotBlank(message = "비밀번호를 입력해주세요.")
     private String userPassword;
-
-    @NotBlank(message = "비밀번호 확인을 입력해주세요.")
-    private String confirmPassword;
-
-    @NotBlank(message = "닉네임을 입력해주세요.")
-    private String userNickname;
 
 }
