@@ -77,7 +77,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         // 반환 데이터
         ProfileCheckDto data = new ProfileCheckDto();
-        data.setUserId(profile.getUser().getUserId());
+        data.setUserId(profile.getUserId().getUserId());
         data.setProfileName(profile.getProfileName());
         data.setProfileRole(profile.getProfileRole());
         data.setProfileBio(profile.getProfileBio());

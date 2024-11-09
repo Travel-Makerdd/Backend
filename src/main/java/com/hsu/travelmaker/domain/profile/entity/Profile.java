@@ -21,7 +21,7 @@ public class Profile extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user; // 사용자 FK
+    private User userId; // 사용자 FK
 
     @Column(name = "profile_name", nullable = false)
     private String profileName; // 이름
