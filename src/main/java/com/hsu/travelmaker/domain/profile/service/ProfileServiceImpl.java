@@ -2,6 +2,7 @@ package com.hsu.travelmaker.domain.profile.service;
 
 import com.hsu.travelmaker.domain.profile.entity.Profile;
 import com.hsu.travelmaker.domain.profile.repository.ProfileRepository;
+import com.hsu.travelmaker.domain.profile.web.dto.ProfileCheckDto;
 import com.hsu.travelmaker.domain.profile.web.dto.ProfileUpdateDto;
 import com.hsu.travelmaker.domain.user.entity.User;
 import com.hsu.travelmaker.domain.user.repository.UserRepository;
@@ -53,6 +54,38 @@ public class ProfileServiceImpl implements ProfileService {
 
         // 성공 응답 반환
         return ResponseEntity.ok(CustomApiResponse.createSuccess(200, null, "프로필이 성공적으로 업데이트되었습니다."));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<CustomApiResponse<?>> getProfile() {
+        // 현재 사용자 ID 조회
+        String currentUserId = authenticationUserUtils.getCurrentUserId();
+
+        // 유효한 사용자 확인
+        if (currentUserId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(CustomApiResponse.createFailWithout(401, "유효하지 않은 토큰이거나, 사용자 정보가 존재하지 않습니다."));
+        }
+
+        // 사용자와 해당 사용자의 프로필 조회
+        User user = userRepository.findById(Long.parseLong(currentUserId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자가 존재하지 않습니다."));
+
+        Profile profile = profileRepository.findByUserUserId(user.getUserId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "프로필이 존재하지 않습니다."));
+
+        // 반환 데이터
+        ProfileCheckDto data = new ProfileCheckDto();
+        data.setUserId(profile.getUser().getUserId());
+        data.setProfileName(profile.getProfileName());
+        data.setProfileRole(profile.getProfileRole());
+        data.setProfileBio(profile.getProfileBio());
+        data.setProfileStyle(profile.getProfileStyle());
+        data.setProfileFavorite(profile.getProfileFavorite());
+
+        // 성공 응답 반환
+        return ResponseEntity.ok(CustomApiResponse.createSuccess(200, data, "프로필 조회에 성공했습니다."));
     }
 
 }
