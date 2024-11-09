@@ -1,6 +1,7 @@
 package com.hsu.travelmaker.domain.profile.web.controller;
 
 import com.hsu.travelmaker.domain.profile.service.ProfileServiceImpl;
+import com.hsu.travelmaker.domain.profile.web.dto.ProfileCheckDto;
 import com.hsu.travelmaker.domain.profile.web.dto.ProfileUpdateDto;
 import com.hsu.travelmaker.global.response.CustomApiResponse;
 import lombok.RequiredArgsConstructor;
