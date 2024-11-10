@@ -21,5 +21,10 @@ public class TripController {
         return tripService.createTrip(dto);
     }
 
+    // 여행 상품 전체 조회
+    @GetMapping("/checkAll")
+    public ResponseEntity<CustomApiResponse<?>> getAllTrips() {
+        return tripService.getAllTrips();
+    }
 
 }

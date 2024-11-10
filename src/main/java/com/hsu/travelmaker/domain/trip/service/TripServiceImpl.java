@@ -76,5 +76,25 @@ public class TripServiceImpl implements TripService {
 
         return ResponseEntity.ok(CustomApiResponse.createSuccess(201, null, "여행 상품이 성공적으로 생성되었습니다."));
     }
+    @Override
+    @Transactional
+    public ResponseEntity<CustomApiResponse<?>> getAllTrips() {
+        // 모든 여행 상품 조회
+        List<Trip> trips = tripRepository.findAll();
+
+        // 조회한 여행 상품 리스트를 DTO로 변환
+        List<TripResponseDto> tripResponseDtos = trips.stream()
+                .map(trip -> new TripResponseDto(
+                        trip.getTripId(),
+                        trip.getTripTitle(),
+                        trip.getTripDescription(),
+                        trip.getUser().getUserId(),  // 사용자의 ID로 변경
+                        trip.getTripPrice(),
+                        trip.getTripStart(),
+                        trip.getTripEnd()))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(CustomApiResponse.createSuccess(200, tripResponseDtos, "여행 상품 목록 조회 성공"));
+    }
 
 }
