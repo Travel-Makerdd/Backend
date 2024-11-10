@@ -8,5 +8,7 @@ public interface TripService {
     ResponseEntity<CustomApiResponse<?>> createTrip(TripCreateDto dto);
     // 여행 상품 전체 조회
     ResponseEntity<CustomApiResponse<?>> getAllTrips();
+    // 특정 여행 상품 조회
+    ResponseEntity<CustomApiResponse<?>> getTripById(Long tripId);
 
 }
