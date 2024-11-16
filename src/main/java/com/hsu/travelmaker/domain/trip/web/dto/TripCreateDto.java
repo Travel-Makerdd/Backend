@@ -30,6 +30,9 @@ public class TripCreateDto {
     @NotBlank(message = "여행 종료일을 입력해주세요.")
     private Date endDate;
 
+    @NotEmpty(message = "여행상품 이미지를 추가해주세요.")
+    private List<String> tripImageUrls;
+
     @NotBlank(message = "일정을 입력해주세요.")
     private List<ScheduleResponseDto> schedules;
 }

@@ -73,6 +73,16 @@ public class TripServiceImpl implements TripService {
 
         // Trip 저장
         tripRepository.save(trip);
+
+        // 게시글 이미지 생성
+        for (String imageUrl : dto.getTripImageUrls()) {
+            TripImage tripImage = TripImage.builder()
+                    .tripId(trip)
+                    .tripImageUrl(imageUrl)
+                    .build();
+            tripImageRepository.save(tripImage);
+        }
+
         // 일정 및 활동 추가
         for (ScheduleResponseDto scheduleDto : dto.getSchedules()) {
             Schedule schedule = new Schedule();
@@ -150,6 +160,12 @@ public class TripServiceImpl implements TripService {
         // 특정 여행 상품 조회
         Trip trip = tripRepository.findByTripId(tripId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "여행 상품을 찾을 수 없습니다."));
+
+        // 해당 여행상품에 연결된 이미지 URL 조회
+        List<String> tripImageUrls = tripImageRepository.findByTripId(trip)
+                .stream()
+                .map(TripImage::getTripImageUrl)
+                .collect(Collectors.toList());
 
         // 해당 여행 상품에 대한 일정 조회 (일차별로 그룹화)
         List<Schedule> schedules = scheduleRepository.findByTrip(trip);
