@@ -29,4 +29,7 @@ public class TripCreateDto {
 
     @NotBlank(message = "여행 종료일을 입력해주세요.")
     private Date endDate;
+
+    @NotBlank(message = "일정을 입력해주세요.")
+    private List<ScheduleResponseDto> schedules;
 }

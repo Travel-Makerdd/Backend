@@ -20,4 +20,5 @@ public class TripResponseDto {
     private BigDecimal tripPrice;
     private Date startDate;
     private Date endDate;
+    private Map<Integer, List<ScheduleResponseDto>> schedules;
 }
