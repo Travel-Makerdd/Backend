@@ -17,7 +17,9 @@ public class TripResponseDto {
     private String tripTitle;
     private String tripDescription;
     private Long userId; // 사용자 fk
+    private List<String> tripImageUrls;
     private BigDecimal tripPrice;
     private Date startDate;
     private Date endDate;
+    private Map<Integer, List<ScheduleResponseDto>> schedules;
 }

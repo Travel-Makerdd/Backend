@@ -41,4 +41,8 @@ public class Trip extends BaseEntity{
 
     @Column(name = "trip_end", nullable = false)
     private Date tripEnd; // 여행 종료일
+
+    @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Schedule> schedules = new ArrayList<>();  // 여행 상품에 포함된 일정 리스트
+
 }
