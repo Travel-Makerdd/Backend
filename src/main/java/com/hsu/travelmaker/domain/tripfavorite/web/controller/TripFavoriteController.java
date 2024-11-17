@@ -25,6 +25,11 @@ public class TripFavoriteController {
     public ResponseEntity<CustomApiResponse<?>> removeTripFavorite(@RequestBody TripFavoriteRemoveDto dto) {
         return tripFavoriteService.removeTripFavorite(dto.getTripFavoriteId());
     }
+    // 사용자별 즐겨찾기 목록 조회
+    @GetMapping("/check")
+    public ResponseEntity<CustomApiResponse<?>> findTripFavoritesByUserId() {
+        return tripFavoriteService.findTripFavoritesByUserId();
+    }
 
     
 }
