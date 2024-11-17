@@ -1,11 +1,12 @@
 package com.hsu.travelmaker.domain.trip.web.dto;
 
+import com.hsu.travelmaker.domain.schedule.web.dto.ScheduleResponseDto;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter

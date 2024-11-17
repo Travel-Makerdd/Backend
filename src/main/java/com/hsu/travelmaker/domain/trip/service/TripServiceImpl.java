@@ -1,6 +1,14 @@
 package com.hsu.travelmaker.domain.trip.service;
 
+import com.hsu.travelmaker.domain.activity.entity.Activity;
+import com.hsu.travelmaker.domain.activity.repository.ActivityRepository;
+import com.hsu.travelmaker.domain.activity.web.dto.ActivityResponseDto;
+import com.hsu.travelmaker.domain.schedule.entity.Schedule;
+import com.hsu.travelmaker.domain.schedule.repository.ScheduleRepository;
+import com.hsu.travelmaker.domain.schedule.web.dto.ScheduleResponseDto;
 import com.hsu.travelmaker.domain.trip.entity.Trip;
+import com.hsu.travelmaker.domain.trip.entity.TripImage;
+import com.hsu.travelmaker.domain.trip.repository.TripImageRepository;
 import com.hsu.travelmaker.domain.trip.repository.TripRepository;
 import com.hsu.travelmaker.domain.trip.web.dto.TripCreateDto;
 import com.hsu.travelmaker.domain.trip.web.dto.TripResponseDto;
@@ -19,6 +27,7 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 

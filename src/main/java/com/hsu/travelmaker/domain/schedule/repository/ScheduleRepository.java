@@ -1,6 +1,6 @@
-package com.hsu.travelmaker.domain.Schedule.repository;
+package com.hsu.travelmaker.domain.schedule.repository;
 
-import com.hsu.travelmaker.domain.Schedule.entity.Schedule;
+import com.hsu.travelmaker.domain.schedule.entity.Schedule;
 import com.hsu.travelmaker.domain.trip.entity.Trip;
 import org.springframework.data.jpa.repository.JpaRepository;
 

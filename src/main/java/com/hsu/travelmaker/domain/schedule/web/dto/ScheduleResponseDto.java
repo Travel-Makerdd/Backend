@@ -1,4 +1,4 @@
-package com.hsu.travelmaker.domain.Schedule.web.dto;
+package com.hsu.travelmaker.domain.schedule.web.dto;
 
 import com.hsu.travelmaker.domain.activity.web.dto.ActivityResponseDto;
 import lombok.AllArgsConstructor;

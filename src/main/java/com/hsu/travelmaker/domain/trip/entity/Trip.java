@@ -1,12 +1,15 @@
 package com.hsu.travelmaker.domain.trip.entity;
 
+import com.hsu.travelmaker.domain.schedule.entity.Schedule;
 import com.hsu.travelmaker.domain.user.entity.User;
 import com.hsu.travelmaker.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "TRIP")
@@ -43,6 +46,7 @@ public class Trip extends BaseEntity{
     private Date tripEnd; // 여행 종료일
 
     @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Schedule> schedules = new ArrayList<>();  // 여행 상품에 포함된 일정 리스트
 
 }

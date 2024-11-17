@@ -1,5 +1,6 @@
 package com.hsu.travelmaker.domain.trip.web.dto;
 
+import com.hsu.travelmaker.domain.schedule.web.dto.ScheduleResponseDto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;

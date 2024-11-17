@@ -1,4 +1,4 @@
-package com.hsu.travelmaker.domain.Schedule.entity;
+package com.hsu.travelmaker.domain.schedule.entity;
 
 import com.hsu.travelmaker.domain.activity.entity.Activity;
 import com.hsu.travelmaker.domain.trip.entity.Trip;
