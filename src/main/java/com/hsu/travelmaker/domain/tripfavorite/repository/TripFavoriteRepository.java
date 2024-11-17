@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface TripFavoriteRepository extends JpaRepository<TripFavorite, Long> {
-
+    List<TripFavorite> findByUser(User user);
 }

@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface TripFavoriteService {
     ResponseEntity<CustomApiResponse<?>> addTripFavorite(Long tripId);
-
+    ResponseEntity<CustomApiResponse<?>> removeTripFavorite(Long tripFavoriteId);
 }

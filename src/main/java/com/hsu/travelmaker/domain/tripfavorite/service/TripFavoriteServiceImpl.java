@@ -58,5 +58,30 @@ public class TripFavoriteServiceImpl implements TripFavoriteService {
         return ResponseEntity.ok(CustomApiResponse.createSuccess(201, null, "여행 상품이 즐겨찾기에 추가되었습니다."));
     }
 
-   
+    @Override
+    @Transactional
+    public ResponseEntity<CustomApiResponse<?>> removeTripFavorite(Long tripFavoriteId) {
+        // 현재 사용자 ID 조회
+        String currentUserId = authenticationUserUtils.getCurrentUserId();
+
+        // 유효한 사용자 확인
+        if (currentUserId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(CustomApiResponse.createFailWithout(401, "유효하지 않은 토큰이거나, 사용자 정보가 존재하지 않습니다."));
+        }
+
+        // 사용자 조회
+        User user = userRepository.findById(Long.parseLong(currentUserId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자가 존재하지 않습니다."));
+
+        // 즐겨찾기 항목 조회
+        TripFavorite tripFavorite = tripFavoriteRepository.findById(tripFavoriteId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 즐겨찾기 항목이 존재하지 않습니다."));
+
+        // 즐겨찾기 삭제
+        tripFavoriteRepository.delete(tripFavorite);
+
+        return ResponseEntity.ok(CustomApiResponse.createSuccess(200, null, "여행 상품이 즐겨찾기에서 해제되었습니다."));
+    }
+
 }
