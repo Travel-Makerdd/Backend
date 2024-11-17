@@ -83,5 +83,38 @@ public class TripFavoriteServiceImpl implements TripFavoriteService {
 
         return ResponseEntity.ok(CustomApiResponse.createSuccess(200, null, "여행 상품이 즐겨찾기에서 해제되었습니다."));
     }
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<CustomApiResponse<?>> findTripFavoritesByUserId() {
+        // 현재 사용자 ID 조회
+        String currentUserId = authenticationUserUtils.getCurrentUserId();
+
+        // 유효한 사용자 확인
+        if (currentUserId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(CustomApiResponse.createFailWithout(401, "유효하지 않은 토큰이거나, 사용자 정보가 존재하지 않습니다."));
+        }
+
+        // 사용자 조회
+        User user = userRepository.findById(Long.parseLong(currentUserId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자가 존재하지 않습니다."));
+
+
+        // 사용자의 즐겨찾기 목록 조회
+        List<TripFavorite> tripFavorites = tripFavoriteRepository.findByUser(user);
+
+        // DTO로 변환
+        List<Object> favoriteTrips = tripFavorites.stream()
+                .map(tripFavorite -> {
+                    return new Object() {
+                        public final Long tripFavoriteId = tripFavorite.getTripFavoriteId();
+                        public final String tripTitle = tripFavorite.getTrip().getTripTitle();
+                        public final String tripDescription = tripFavorite.getTrip().getTripDescription();
+                    };
+                })
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(CustomApiResponse.createSuccess(200, favoriteTrips, "즐겨찾기 목록 조회 성공"));
+    }
 
 }
