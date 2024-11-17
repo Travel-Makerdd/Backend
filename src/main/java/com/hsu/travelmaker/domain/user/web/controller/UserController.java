@@ -8,10 +8,7 @@ import com.hsu.travelmaker.global.response.CustomApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
@@ -20,14 +17,22 @@ public class UserController {
 
     private final UserServiceImpl userService;
 
+    // 회원가입
     @PostMapping("/signUp")
     public ResponseEntity<CustomApiResponse<?>> signUp(@Valid @RequestBody SignUpDto dto) {
         return userService.signUp(dto);
     }
 
+    // 로그인
     @PostMapping("/signIn")
     public ResponseEntity<CustomApiResponse<?>> signIn(@RequestBody SignInDto dto) {
         return userService.signIn(dto);
+    }
+
+    // 회원 탈퇴
+    @DeleteMapping("/withdraw")
+    public ResponseEntity<CustomApiResponse<?>> withdraw() {
+        return userService.withdraw();
     }
 
 }

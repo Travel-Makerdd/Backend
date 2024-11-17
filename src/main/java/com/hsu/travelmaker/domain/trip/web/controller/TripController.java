@@ -26,6 +26,7 @@ public class TripController {
     public ResponseEntity<CustomApiResponse<?>> getAllTrips() {
         return tripService.getAllTrips();
     }
+
     // 여행 상품 상세 조회
     @GetMapping("/check/{tripId}")
     public ResponseEntity<CustomApiResponse<?>> getTripById(@PathVariable Long tripId) {
