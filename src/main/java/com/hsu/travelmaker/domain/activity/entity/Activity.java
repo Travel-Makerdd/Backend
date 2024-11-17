@@ -1,6 +1,6 @@
 package com.hsu.travelmaker.domain.activity.entity;
 
-import com.hsu.travelmaker.domain.Schedule.entity.Schedule;
+import com.hsu.travelmaker.domain.schedule.entity.Schedule;
 import com.hsu.travelmaker.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;

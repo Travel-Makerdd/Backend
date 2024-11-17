@@ -1,6 +1,6 @@
-package com.hsu.travelmaker.domain.Schedule.web.controller;
+package com.hsu.travelmaker.domain.schedule.web.controller;
 
-import com.hsu.travelmaker.domain.Schedule.service.ScheduleServiceImpl;
+import com.hsu.travelmaker.domain.schedule.service.ScheduleServiceImpl;
 import com.hsu.travelmaker.global.response.CustomApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

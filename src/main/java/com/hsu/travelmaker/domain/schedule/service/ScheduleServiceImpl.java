@@ -1,8 +1,8 @@
-package com.hsu.travelmaker.domain.Schedule.service;
+package com.hsu.travelmaker.domain.schedule.service;
 
-import com.hsu.travelmaker.domain.Schedule.entity.Schedule;
-import com.hsu.travelmaker.domain.Schedule.repository.ScheduleRepository;
-import com.hsu.travelmaker.domain.Schedule.web.dto.ScheduleResponseDto;
+import com.hsu.travelmaker.domain.schedule.entity.Schedule;
+import com.hsu.travelmaker.domain.schedule.repository.ScheduleRepository;
+import com.hsu.travelmaker.domain.schedule.web.dto.ScheduleResponseDto;
 import com.hsu.travelmaker.domain.activity.repository.ActivityRepository;
 import com.hsu.travelmaker.domain.activity.web.dto.ActivityResponseDto;
 import com.hsu.travelmaker.domain.trip.entity.Trip;
