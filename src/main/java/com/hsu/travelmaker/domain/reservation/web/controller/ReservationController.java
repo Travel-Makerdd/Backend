@@ -24,5 +24,9 @@ public class ReservationController {
     public ResponseEntity<CustomApiResponse<?>> deleteReservation(@PathVariable Long reservationId) {
         return reservationService.deleteReservation(reservationId);
     }
-
+    // 예약 목록 전체 조회
+    @GetMapping("/checkAll")
+    public ResponseEntity<CustomApiResponse<?>> getAllReservation() {
+        return reservationService.getAllReservation();
+    }
 }
