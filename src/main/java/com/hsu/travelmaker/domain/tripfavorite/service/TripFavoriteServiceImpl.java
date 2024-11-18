@@ -4,6 +4,7 @@ import com.hsu.travelmaker.domain.trip.entity.Trip;
 import com.hsu.travelmaker.domain.trip.repository.TripRepository;
 import com.hsu.travelmaker.domain.tripfavorite.entity.TripFavorite;
 import com.hsu.travelmaker.domain.tripfavorite.repository.TripFavoriteRepository;
+import com.hsu.travelmaker.domain.tripfavorite.web.dto.TripFavoriteResponseDto;
 import com.hsu.travelmaker.domain.user.entity.User;
 import com.hsu.travelmaker.domain.user.repository.UserRepository;
 import com.hsu.travelmaker.global.response.CustomApiResponse;
@@ -50,8 +51,8 @@ public class TripFavoriteServiceImpl implements TripFavoriteService {
 
         // 즐겨찾기 생성 및 저장
         TripFavorite tripFavorite = TripFavorite.builder()
-                .user(user)
-                .trip(trip)
+                .userId(user)
+                .tripId(trip)
                 .build();
         tripFavoriteRepository.save(tripFavorite);
 
@@ -101,20 +102,19 @@ public class TripFavoriteServiceImpl implements TripFavoriteService {
 
 
         // 사용자의 즐겨찾기 목록 조회
-        List<TripFavorite> tripFavorites = tripFavoriteRepository.findByUser(user);
+        List<TripFavorite> tripFavorites = tripFavoriteRepository.findByUserId(user);
 
-        // DTO로 변환
-        List<Object> favoriteTrips = tripFavorites.stream()
-                .map(tripFavorite -> {
-                    return new Object() {
-                        public final Long tripFavoriteId = tripFavorite.getTripFavoriteId();
-                        public final String tripTitle = tripFavorite.getTrip().getTripTitle();
-                        public final String tripDescription = tripFavorite.getTrip().getTripDescription();
-                    };
-                })
+        /// DTO로 변환
+        List<TripFavoriteResponseDto> favoriteResponseDtos = tripFavorites.stream()
+                .map(tripFavorite -> TripFavoriteResponseDto.builder()
+                        .tripFavoriteId(tripFavorite.getTripFavoriteId()) // 즐겨찾기 ID
+                        .tripId(tripFavorite.getTripId().getTripId()) // 여행상품 ID
+                        .tripTitle(tripFavorite.getTripId().getTripTitle())
+                        .tripDescription(tripFavorite.getTripId().getTripDescription())
+                        .build())
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(CustomApiResponse.createSuccess(200, favoriteTrips, "즐겨찾기 목록 조회 성공"));
+        return ResponseEntity.ok(CustomApiResponse.createSuccess(200, favoriteResponseDtos, "즐겨찾기 목록 조회 성공"));
     }
 
 }

@@ -22,9 +22,9 @@ public class TripFavorite extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user; // 사용자 FK
+    private User userId; // 사용자 FK
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "trip_id", nullable = false)
-    private Trip trip; // 여행상품 FK
+    private Trip tripId; // 여행상품 FK
 }
