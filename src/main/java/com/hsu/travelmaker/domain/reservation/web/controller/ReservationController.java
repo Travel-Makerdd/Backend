@@ -19,5 +19,10 @@ public class ReservationController {
     public ResponseEntity<CustomApiResponse<?>> createReservation(@RequestBody ReservationCreateDto dto) {
         return reservationService.createReservation(dto.getTripId());
     }
+    // 예약 취소
+    @PostMapping("/delete/{reservationId}")
+    public ResponseEntity<CustomApiResponse<?>> deleteReservation(@PathVariable Long reservationId) {
+        return reservationService.deleteReservation(reservationId);
+    }
 
 }

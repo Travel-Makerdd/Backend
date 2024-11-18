@@ -57,5 +57,29 @@ public class ReservationServiceImpl implements ReservationService{
         return ResponseEntity.ok(CustomApiResponse.createSuccess(201, null, "예약이 성공적으로 생성되었습니다."));
 
     }
-    
+    @Override
+    @Transactional
+    public ResponseEntity<CustomApiResponse<?>> deleteReservation(Long reservationId){
+        // 현재 사용자 ID 조회
+        String currentUserId = authenticationUserUtils.getCurrentUserId();
+
+        // 유효한 사용자 확인
+        if (currentUserId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(CustomApiResponse.createFailWithout(401, "유효하지 않은 토큰이거나, 사용자 정보가 존재하지 않습니다."));
+        }
+
+        // 사용자 조회
+        User user = userRepository.findById(Long.parseLong(currentUserId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자가 존재하지 않습니다."));
+
+        // 특정 예약 조회
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "여행 상품을 찾을 수 없습니다."));
+        // 즐겨찾기 삭제
+        reservationRepository.delete(reservation);
+
+        return ResponseEntity.ok(CustomApiResponse.createSuccess(200, null, "예약이 취소되었습니다."));
+    }
+
 }
