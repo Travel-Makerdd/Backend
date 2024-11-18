@@ -21,12 +21,12 @@ public class TripFavoriteController {
         return tripFavoriteService.addTripFavorite(dto.getTripId());
     }
     // 즐겨찾기 항목 삭제
-    @PostMapping("/remove")
-    public ResponseEntity<CustomApiResponse<?>> removeTripFavorite(@RequestBody TripFavoriteRemoveDto dto) {
-        return tripFavoriteService.removeTripFavorite(dto.getTripFavoriteId());
+    @PostMapping("/remove/{tripFavoriteId}")
+    public ResponseEntity<CustomApiResponse<?>> removeTripFavorite(@PathVariable Long tripFavoriteId) {
+        return tripFavoriteService.removeTripFavorite(tripFavoriteId);
     }
     // 사용자별 즐겨찾기 목록 조회
-    @GetMapping("/check")
+    @GetMapping("/checkAll")
     public ResponseEntity<CustomApiResponse<?>> findTripFavoritesByUserId() {
         return tripFavoriteService.findTripFavoritesByUserId();
     }
