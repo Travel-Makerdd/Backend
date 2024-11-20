@@ -24,5 +24,10 @@ public class ReviewController {
     public ResponseEntity<CustomApiResponse<?>> getReviewByTrip(@PathVariable Long tripId) {
         return reviewService.getReviewByTrip(tripId);
     }
+    // 리뷰 수정
+    @PostMapping("/update")
+    public ResponseEntity<CustomApiResponse<?>> updateReview(@RequestBody ReviewUpdateDto dto) {
+        return reviewService.updateReview(dto);
+    }
 
 }

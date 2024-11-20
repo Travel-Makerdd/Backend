@@ -92,6 +92,41 @@ public class ReviewServiceImpl implements ReviewService{
 
         return ResponseEntity.ok(CustomApiResponse.createSuccess(200, reviewResponseDtos, "여행 상품 리뷰 조회 성공"));
     }
+    @Override
+    @Transactional
+    public ResponseEntity<CustomApiResponse<?>> updateReview(ReviewUpdateDto dto) {
+        // 현재 사용자 ID 조회
+        String currentUserId = authenticationUserUtils.getCurrentUserId();
+
+        // 유효한 사용자 확인
+        if (currentUserId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(CustomApiResponse.createFailWithout(401, "유효하지 않은 토큰이거나, 사용자 정보가 존재하지 않습니다."));
+        }
+
+        // 사용자 조회
+        User user = userRepository.findById(Long.parseLong(currentUserId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자가 존재하지 않습니다."));
+
+        // 리뷰 조회
+        Review review = reviewRepository.findByUserIdAndTripId(user,
+                        tripRepository.findById(dto.getTripId())
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "여행상품을 찾을 수 없습니다.")))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 여행 상품에 대한 리뷰를 찾을 수 없습니다."));
+
+        // 리뷰 데이터 업데이트
+        if (dto.getReviewRating() != null) {
+            review.setReviewRating(dto.getReviewRating());
+        }
+        if (dto.getReviewContent() != null && !dto.getReviewContent().isEmpty()) {
+            review.setReviewContent(dto.getReviewContent());
+        }
+
+        // 수정된 리뷰 저장
+        reviewRepository.save(review);
+
+        return ResponseEntity.ok(CustomApiResponse.createSuccess(200, null, "리뷰가 성공적으로 수정되었습니다."));
+    }
 
     
 }
