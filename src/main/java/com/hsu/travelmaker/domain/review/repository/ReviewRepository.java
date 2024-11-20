@@ -11,8 +11,9 @@ import java.util.Optional;
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     // 여행상품과 연관된 리뷰 목록 조회
     List<Review> findByTripId(Trip trip);
-
     // 사용자와 여행 상품에 해당하는 리뷰 조회
     Optional<Review> findByUserIdAndTripId(User userId, Trip tripId);
+    // 사용자와 연관된 리뷰 목록 조회
+    List<Review> findByUserId(User user);
 
 }
