@@ -9,4 +9,5 @@ public interface ReviewService {
     ResponseEntity<CustomApiResponse<?>> createReview(ReviewCreateDto dto);
     ResponseEntity<CustomApiResponse<?>> getReviewByTrip(Long tripId);
     ResponseEntity<CustomApiResponse<?>> updateReview(ReviewUpdateDto dto);
+    ResponseEntity<CustomApiResponse<?>> getReviewByUser();
 }

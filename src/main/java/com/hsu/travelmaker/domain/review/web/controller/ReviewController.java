@@ -29,5 +29,9 @@ public class ReviewController {
     public ResponseEntity<CustomApiResponse<?>> updateReview(@RequestBody ReviewUpdateDto dto) {
         return reviewService.updateReview(dto);
     }
-
+    // 사용자 리뷰 목록 전체 조회
+    @GetMapping("/checkAll")
+    public ResponseEntity<CustomApiResponse<?>> getReviewByUser() {
+        return reviewService.getReviewByUser();
+    }
 }

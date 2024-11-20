@@ -127,6 +127,38 @@ public class ReviewServiceImpl implements ReviewService{
 
         return ResponseEntity.ok(CustomApiResponse.createSuccess(200, null, "리뷰가 성공적으로 수정되었습니다."));
     }
+    @Override
+    @Transactional
+    public ResponseEntity<CustomApiResponse<?>> getReviewByUser() {
+        // 현재 사용자 ID 조회
+        String currentUserId = authenticationUserUtils.getCurrentUserId();
 
-    
+        // 유효한 사용자 확인
+        if (currentUserId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(CustomApiResponse.createFailWithout(401, "유효하지 않은 토큰이거나, 사용자 정보가 존재하지 않습니다."));
+        }
+
+        // 사용자 조회
+        User user = userRepository.findById(Long.parseLong(currentUserId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자가 존재하지 않습니다."));
+
+        // 사용자의 리뷰 목록 조회
+        List<Review> reviews = reviewRepository.findByUserId(user);
+
+        // 리뷰 목록을 DTO 변환
+        List<ReviewResponseDto> reviewResponseDtos = reviews.stream()
+                .map(review -> ReviewResponseDto.builder()
+                        .reviewId(review.getReviewId())
+                        .tripId(review.getTripId().getTripId())
+                        .userId(review.getUserId().getUserId())
+                        .tripTitle(review.getTripId().getTripTitle())
+                        .reviewRating(review.getReviewRating())
+                        .reviewContent(review.getReviewContent())
+                        .updatedAt(review.getUpdatedAt())
+                        .build())
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(CustomApiResponse.createSuccess(200, reviewResponseDtos, "사용자의 리뷰 목록 조회 성공"));
+    }
 }
