@@ -19,5 +19,10 @@ public class ReviewController {
     public ResponseEntity<CustomApiResponse<?>> createReview(@RequestBody ReviewCreateDto dto) {
         return reviewService.createReview(dto);
     }
-    
+    // 여행상품 리뷰 조회
+    @GetMapping("/check/{tripId}")
+    public ResponseEntity<CustomApiResponse<?>> getReviewByTrip(@PathVariable Long tripId) {
+        return reviewService.getReviewByTrip(tripId);
+    }
+
 }

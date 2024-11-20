@@ -67,6 +67,31 @@ public class ReviewServiceImpl implements ReviewService{
 
         return ResponseEntity.ok(CustomApiResponse.createSuccess(201, null, "리뷰가 성공적으로 생성되었습니다."));
     }
+    @Override
+    @Transactional
+    public ResponseEntity<CustomApiResponse<?>> getReviewByTrip(Long tripId){
+        // 여행상품 조회
+        Trip trip = tripRepository.findById(tripId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "여행상품을 찾을 수 없습니다."));
+
+        // 여행 상품에 대한 리뷰 조회
+        List<Review> reviews = reviewRepository.findByTripId(trip);
+
+        // 리뷰 목록을 DTO로 변환
+        List<ReviewResponseDto> reviewResponseDtos = reviews.stream()
+                .map(review -> ReviewResponseDto.builder()
+                        .reviewId(review.getReviewId())
+                        .tripId(review.getTripId().getTripId())
+                        .userId(review.getUserId().getUserId())
+                        .tripTitle(review.getTripId().getTripTitle())
+                        .reviewRating(review.getReviewRating())
+                        .reviewContent(review.getReviewContent())
+                        .updatedAt(review.getUpdatedAt())
+                        .build())
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(CustomApiResponse.createSuccess(200, reviewResponseDtos, "여행 상품 리뷰 조회 성공"));
+    }
 
     
 }
