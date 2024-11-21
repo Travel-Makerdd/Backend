@@ -2,7 +2,6 @@ package com.hsu.travelmaker.domain.tripfavorite.web.controller;
 
 import com.hsu.travelmaker.domain.tripfavorite.service.TripFavoriteService;
 import com.hsu.travelmaker.domain.tripfavorite.web.dto.TripFavoriteCreateDto;
-import com.hsu.travelmaker.domain.tripfavorite.web.dto.TripFavoriteRemoveDto;
 import com.hsu.travelmaker.global.response.CustomApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
