@@ -35,6 +35,7 @@ public class PostController {
         return postService.getPostAll(page, size);
     }
 
+    // 게시글 수정
     @PostMapping("/update/{postId}")
     public ResponseEntity<CustomApiResponse<?>> updatePost(@PathVariable Long postId, @RequestBody PostUpdateDto dto) {
         return postService.updatePost(postId, dto);
