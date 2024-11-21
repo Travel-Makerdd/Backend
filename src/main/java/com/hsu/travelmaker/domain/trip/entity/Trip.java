@@ -1,5 +1,6 @@
 package com.hsu.travelmaker.domain.trip.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.hsu.travelmaker.domain.schedule.entity.Schedule;
 import com.hsu.travelmaker.domain.user.entity.User;
 import com.hsu.travelmaker.global.entity.BaseEntity;
@@ -39,14 +40,12 @@ public class Trip extends BaseEntity{
     @Column(name = "trip_price", nullable = false)
     private BigDecimal tripPrice; // 여행 상품 가격
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "trip_start", nullable = false)
     private Date tripStart; // 여행 시작일
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "trip_end", nullable = false)
     private Date tripEnd; // 여행 종료일
-
-    @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<Schedule> schedules = new ArrayList<>();  // 여행 상품에 포함된 일정 리스트
 
 }

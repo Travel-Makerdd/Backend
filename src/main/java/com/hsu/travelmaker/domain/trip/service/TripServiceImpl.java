@@ -58,26 +58,14 @@ public class TripServiceImpl implements TripService {
         User user = userRepository.findById(Long.parseLong(currentUserId))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자가 존재하지 않습니다."));
 
-        // 날짜 변환
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date tripStart = null;
-        Date tripEnd = null;
-        try {
-            tripStart = dto.getStartDate();
-            tripEnd = dto.getEndDate();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(CustomApiResponse.createFailWithout(400, "날짜 형식이 잘못되었습니다."));
-        }
-
         // 여행 상품 생성
         Trip trip = Trip.builder()
                 .user(user)
                 .tripTitle(dto.getTripTitle())
                 .tripDescription(dto.getTripDescription())
                 .tripPrice(dto.getTripPrice())
-                .tripStart(tripStart)
-                .tripEnd(tripEnd)
+                .tripStart(dto.getStartDate())
+                .tripEnd(dto.getEndDate())
                 .build();
 
         // Trip 저장

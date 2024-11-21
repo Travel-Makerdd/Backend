@@ -8,4 +8,5 @@ import org.springframework.http.ResponseEntity;
 public interface UserService {
     ResponseEntity<CustomApiResponse<?>> signUp(SignUpDto dto);
     ResponseEntity<CustomApiResponse<?>> signIn(SignInDto dto);
+    ResponseEntity<CustomApiResponse<?>> withdraw();
 }

@@ -1,9 +1,13 @@
 package com.hsu.travelmaker.domain.user.entity;
 
+import com.hsu.travelmaker.domain.trip.entity.Trip;
 import com.hsu.travelmaker.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "USER")

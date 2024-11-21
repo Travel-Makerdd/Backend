@@ -19,7 +19,7 @@ public class Profile extends BaseEntity {
     @Column(name = "profile_id")
     private Long profileId; // 프로필 PK
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "user_id", nullable = false)
     private User user; // 사용자 FK
 
