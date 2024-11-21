@@ -1,20 +1,26 @@
 package com.hsu.travelmaker.domain.user.service;
 
+import com.hsu.travelmaker.domain.post.repository.PostRepository;
 import com.hsu.travelmaker.domain.profile.entity.Profile;
 import com.hsu.travelmaker.domain.profile.entity.Role;
 import com.hsu.travelmaker.domain.profile.repository.ProfileRepository;
+import com.hsu.travelmaker.domain.trip.repository.TripRepository;
 import com.hsu.travelmaker.domain.user.entity.User;
 import com.hsu.travelmaker.domain.user.repository.UserRepository;
 import com.hsu.travelmaker.domain.user.web.dto.SignInDto;
 import com.hsu.travelmaker.domain.user.web.dto.SignUpDto;
 import com.hsu.travelmaker.global.response.CustomApiResponse;
 import com.hsu.travelmaker.global.security.jwt.JwtTokenProvider;
+import com.hsu.travelmaker.global.security.jwt.util.AuthenticationUserUtils;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -22,8 +28,15 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final ProfileRepository profileRepository;
+    private final TripRepository tripRepository;
+    private final PostRepository postRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final AuthenticationUserUtils authenticationUserUtils; // 현재 로그인된 사용자 정보를 가져옴
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
 
     @Override
     @Transactional
@@ -51,7 +64,7 @@ public class UserServiceImpl implements UserService {
         // 빈 프로필 생성 및 저장
         Profile profile = Profile.builder()
                 .user(user)
-                .profileName("")
+                .profileName(user.getUserNickname())
                 .profileRole(Role.DEFAULT)
                 .profileBio("")
                 .profileStyle("")
@@ -81,4 +94,26 @@ public class UserServiceImpl implements UserService {
         return ResponseEntity.ok(CustomApiResponse.createSuccess(200, token, "로그인에 성공했습니다."));
     }
 
+    @Override
+    @Transactional
+    public ResponseEntity<CustomApiResponse<?>> withdraw() {
+        String currentUserId = authenticationUserUtils.getCurrentUserId();
+        if (currentUserId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(CustomApiResponse.createFailWithout(401, "유효하지 않은 토큰입니다."));
+        }
+
+        Long userId = Long.parseLong(currentUserId);
+
+        // 외래 키 체크 비활성화
+        entityManager.createNativeQuery("SET FOREIGN_KEY_CHECKS = 0").executeUpdate();
+
+        // 사용자 삭제
+        userRepository.deleteUserDirectly(userId);
+
+        // 외래 키 체크 다시 활성화
+        entityManager.createNativeQuery("SET FOREIGN_KEY_CHECKS = 1").executeUpdate();
+
+        return ResponseEntity.ok(CustomApiResponse.createSuccess(200, null, "회원 탈퇴가 완료되었습니다."));
+    }
 }
