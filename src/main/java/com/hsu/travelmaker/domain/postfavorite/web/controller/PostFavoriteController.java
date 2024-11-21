@@ -25,4 +25,10 @@ public class PostFavoriteController {
         return postFavoriteService.removePostFavorite(postId);
     }
 
+    // 게시글 즐겨찾기 조회
+    @GetMapping("/getFavorite")
+    public ResponseEntity<CustomApiResponse<?>> getPostFavorite() {
+        return postFavoriteService.getPostFavorite();
+    }
+
 }
