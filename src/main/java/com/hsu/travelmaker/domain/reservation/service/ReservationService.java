@@ -6,6 +6,6 @@ import org.springframework.http.ResponseEntity;
 
 public interface ReservationService {
     ResponseEntity<CustomApiResponse<?>> createReservation(Long tripId);
-    ResponseEntity<CustomApiResponse<?>> deleteReservation(Long reservationId);
+    ResponseEntity<CustomApiResponse<?>> deleteReservation(Long tripId);
     ResponseEntity<CustomApiResponse<?>> getAllReservation();
 }
