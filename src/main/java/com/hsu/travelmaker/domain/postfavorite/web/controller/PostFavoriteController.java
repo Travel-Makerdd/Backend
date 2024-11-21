@@ -19,4 +19,10 @@ public class PostFavoriteController {
         return postFavoriteService.addPostFavorite(postId);
     }
 
+    // 게시글 즐겨찾기 해제
+    @PostMapping("{postId}/unfavorite")
+    public ResponseEntity<CustomApiResponse<?>> removePostFavorite(@PathVariable Long postId) {
+        return postFavoriteService.removePostFavorite(postId);
+    }
+
 }
