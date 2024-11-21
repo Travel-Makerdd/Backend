@@ -34,6 +34,4 @@ public class PostController {
         return postService.getPostAll(page, size);
     }
 
-
-
 }
