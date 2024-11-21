@@ -2,7 +2,6 @@ package com.hsu.travelmaker.domain.comment.web.controller;
 
 import com.hsu.travelmaker.domain.comment.service.CommentService;
 import com.hsu.travelmaker.domain.comment.web.dto.CommentAddDto;
-import com.hsu.travelmaker.domain.post.web.dto.PostCreateDto;
 import com.hsu.travelmaker.global.response.CustomApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +17,11 @@ public class CommentController {
     @PostMapping("/{postId}/addComment")
     public ResponseEntity<CustomApiResponse<?>> addComment(@PathVariable Long postId, @RequestBody CommentAddDto dto){
         return commentService.addComment(postId, dto);
+    }
+
+    @GetMapping("/{postId}/getComment")
+    public ResponseEntity<CustomApiResponse<?>> getComment(@PathVariable Long postId){
+        return commentService.getComment(postId);
     }
 
 }
