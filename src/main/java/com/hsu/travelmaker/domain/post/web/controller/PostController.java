@@ -2,6 +2,7 @@ package com.hsu.travelmaker.domain.post.web.controller;
 
 import com.hsu.travelmaker.domain.post.service.PostServiceImpl;
 import com.hsu.travelmaker.domain.post.web.dto.PostCreateDto;
+import com.hsu.travelmaker.domain.post.web.dto.PostUpdateDto;
 import com.hsu.travelmaker.global.response.CustomApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +33,11 @@ public class PostController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "6") int size) {
         return postService.getPostAll(page, size);
+    }
+
+    @PostMapping("/update/{postId}")
+    public ResponseEntity<CustomApiResponse<?>> updatePost(@PathVariable Long postId, @RequestBody PostUpdateDto dto) {
+        return postService.updatePost(postId, dto);
     }
 
 }
