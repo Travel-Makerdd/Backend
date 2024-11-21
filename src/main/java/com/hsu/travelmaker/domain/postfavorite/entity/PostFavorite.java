@@ -4,8 +4,15 @@ import com.hsu.travelmaker.domain.post.entity.Post;
 import com.hsu.travelmaker.domain.user.entity.User;
 import com.hsu.travelmaker.global.entity.BaseEntity;
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
+@Table(name = "POSTFAVORITE")
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class PostFavorite extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
