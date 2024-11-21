@@ -3,6 +3,7 @@ package com.hsu.travelmaker.domain.reservation.service;
 import com.hsu.travelmaker.domain.reservation.entity.Reservation;
 import com.hsu.travelmaker.domain.reservation.repository.ReservationRepository;
 import com.hsu.travelmaker.domain.reservation.web.dto.ReservationResponseDto;
+import com.hsu.travelmaker.domain.review.entity.Review;
 import com.hsu.travelmaker.domain.trip.entity.Trip;
 import com.hsu.travelmaker.domain.trip.repository.TripRepository;
 import com.hsu.travelmaker.domain.user.entity.User;
@@ -65,7 +66,7 @@ public class ReservationServiceImpl implements ReservationService{
     }
     @Override
     @Transactional
-    public ResponseEntity<CustomApiResponse<?>> deleteReservation(Long reservationId){
+    public ResponseEntity<CustomApiResponse<?>> deleteReservation(Long tripId){
         // 현재 사용자 ID 조회
         String currentUserId = authenticationUserUtils.getCurrentUserId();
 
@@ -80,9 +81,12 @@ public class ReservationServiceImpl implements ReservationService{
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자가 존재하지 않습니다."));
 
         // 특정 예약 조회
-        Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "여행 상품을 찾을 수 없습니다."));
-        // 즐겨찾기 삭제
+        Reservation reservation = reservationRepository.findByUserIdAndTripId(user,
+                        tripRepository.findById(tripId)
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "여행상품을 찾을 수 없습니다.")))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 여행 상품에 대한 즐겨찾기를 찾을 수 없습니다."));
+
+        // 예약 삭제
         reservationRepository.delete(reservation);
 
         return ResponseEntity.ok(CustomApiResponse.createSuccess(200, null, "예약이 취소되었습니다."));

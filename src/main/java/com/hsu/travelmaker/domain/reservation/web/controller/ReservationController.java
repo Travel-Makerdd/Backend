@@ -18,9 +18,9 @@ public class ReservationController {
         return reservationService.createReservation(tripId);
     }
     // 예약 취소
-    @PostMapping("/delete/{reservationId}")
-    public ResponseEntity<CustomApiResponse<?>> deleteReservation(@PathVariable Long reservationId) {
-        return reservationService.deleteReservation(reservationId);
+    @PostMapping("/delete/{tripId}")
+    public ResponseEntity<CustomApiResponse<?>> deleteReservation(@PathVariable Long tripId) {
+        return reservationService.deleteReservation(tripId);
     }
     // 예약 목록 전체 조회
     @GetMapping("/checkAll")
