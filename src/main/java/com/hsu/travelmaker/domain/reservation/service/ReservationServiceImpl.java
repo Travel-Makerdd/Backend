@@ -47,6 +47,12 @@ public class ReservationServiceImpl implements ReservationService{
         Trip trip = tripRepository.findById(tripId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "여행상품을 찾을 수 없습니다."));
 
+        // 사용자가 해당 여행상품을 예약 했는지 조회
+        boolean reservationExists = reservationRepository.findByUserIdAndTripId(user, trip).isPresent();
+        if (reservationExists) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(CustomApiResponse.createFailWithout(409, "이미 예약한 여행상품입니다."));
+        }
         // 예약 생성 및 저장
         Reservation reservation = Reservation.builder()
                 .userId(user)
