@@ -104,7 +104,7 @@ public class TripFavoriteServiceImpl implements TripFavoriteService {
         // 사용자의 즐겨찾기 목록 조회
         List<TripFavorite> tripFavorites = tripFavoriteRepository.findByUserId(user);
 
-        /// DTO로 변환
+        // DTO로 변환
         List<TripFavoriteResponseDto> favoriteResponseDtos = tripFavorites.stream()
                 .map(tripFavorite -> TripFavoriteResponseDto.builder()
                         .tripFavoriteId(tripFavorite.getTripFavoriteId()) // 즐겨찾기 ID
