@@ -5,12 +5,18 @@ import com.hsu.travelmaker.domain.post.entity.PostImage;
 import com.hsu.travelmaker.domain.post.repository.PostImageRepository;
 import com.hsu.travelmaker.domain.post.repository.PostRepository;
 import com.hsu.travelmaker.domain.post.web.dto.PostCreateDto;
+import com.hsu.travelmaker.domain.post.web.dto.PostListPageResponseDto;
+import com.hsu.travelmaker.domain.post.web.dto.PostListResponseDto;
 import com.hsu.travelmaker.domain.post.web.dto.PostResponseDto;
 import com.hsu.travelmaker.domain.user.entity.User;
 import com.hsu.travelmaker.domain.user.repository.UserRepository;
 import com.hsu.travelmaker.global.response.CustomApiResponse;
 import com.hsu.travelmaker.global.security.jwt.util.AuthenticationUserUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -68,7 +74,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<CustomApiResponse<?>> getPost(Long postId) {
+    public ResponseEntity<CustomApiResponse<?>> getPostDetail(Long postId) {
         // 게시글 조회
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."));
@@ -89,6 +95,41 @@ public class PostServiceImpl implements PostService {
                 .build();
 
         return ResponseEntity.ok(CustomApiResponse.createSuccess(200, data, "게시글 조회에 성공했습니다."));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<CustomApiResponse<?>> getPostAll(int page, int size) {
+        // 페이지 요청 생성
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        // 게시글 목록 조회 (페이지네이션)
+        Page<Post> postPage = postRepository.findAll(pageable);
+
+        // 게시글 DTO 리스트 변환
+        List<PostListResponseDto> postList = postPage.getContent().stream().map(post -> {
+            // 첫 번째 이미지 URL 가져오기
+            String firstImageUrl = postImageRepository.findFirstByPostId(post)
+                    .map(PostImage::getPostImageUrl)
+                    .orElse(null);
+
+            // 게시글 DTO 생성
+            return PostListResponseDto.builder()
+                    .postId(post.getPostId())
+                    .postTitle(post.getPostTitle())
+                    .postContentPreview(post.getPostContent().substring(0, Math.min(post.getPostContent().length(), 50))) // 내용 일부
+                    .postImageUrl(firstImageUrl)
+                    .build();
+        }).collect(Collectors.toList());
+
+        PostListPageResponseDto data = PostListPageResponseDto.builder()
+                .posts(postList)
+                .totalPages(postPage.getTotalPages())
+                .totalElements(postPage.getTotalElements())
+                .currentPage(postPage.getNumber())
+                .build();
+
+        return ResponseEntity.ok(CustomApiResponse.createSuccess(200, data, "게시글 목록 조회에 성공했습니다."));
     }
 
 }
