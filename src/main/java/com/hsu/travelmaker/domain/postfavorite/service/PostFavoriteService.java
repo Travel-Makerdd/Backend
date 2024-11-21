@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface PostFavoriteService {
     ResponseEntity<CustomApiResponse<?>> addPostFavorite(Long postId);
     ResponseEntity<CustomApiResponse<?>> removePostFavorite(Long postId);
+    ResponseEntity<CustomApiResponse<?>> getPostFavorite();
 }
