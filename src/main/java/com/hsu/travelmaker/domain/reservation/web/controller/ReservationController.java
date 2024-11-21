@@ -1,8 +1,6 @@
 package com.hsu.travelmaker.domain.reservation.web.controller;
 
 import com.hsu.travelmaker.domain.reservation.service.ReservationService;
-import com.hsu.travelmaker.domain.reservation.web.dto.ReservationCreateDto;
-import com.hsu.travelmaker.domain.reservation.web.dto.ReservationDeleteDto;
 import com.hsu.travelmaker.global.response.CustomApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +13,9 @@ public class ReservationController {
 
     private final ReservationService reservationService;
     // 예약 생성
-    @PostMapping("/create")
-    public ResponseEntity<CustomApiResponse<?>> createReservation(@RequestBody ReservationCreateDto dto) {
-        return reservationService.createReservation(dto.getTripId());
+    @PostMapping("/create/{tripId}")
+    public ResponseEntity<CustomApiResponse<?>> createReservation(@PathVariable Long tripId) {
+        return reservationService.createReservation(tripId);
     }
     // 예약 취소
     @PostMapping("/delete/{reservationId}")
