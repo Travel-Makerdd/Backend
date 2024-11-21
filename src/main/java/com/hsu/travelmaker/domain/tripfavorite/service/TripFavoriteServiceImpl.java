@@ -49,6 +49,12 @@ public class TripFavoriteServiceImpl implements TripFavoriteService {
         Trip trip = tripRepository.findById(tripId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "여행 상품이 존재하지 않습니다."));
 
+        // 사용자가 해당 여행상품을 즐겨찾기 했는지 조회
+        boolean tripFavoriteExists = tripFavoriteRepository.findByUserIdAndTripId(user, trip).isPresent();
+        if (tripFavoriteExists) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(CustomApiResponse.createFailWithout(409, "이미 즐겨찾기한 여행상품입니다."));
+        }
         // 즐겨찾기 생성 및 저장
         TripFavorite tripFavorite = TripFavorite.builder()
                 .userId(user)
@@ -61,7 +67,7 @@ public class TripFavoriteServiceImpl implements TripFavoriteService {
 
     @Override
     @Transactional
-    public ResponseEntity<CustomApiResponse<?>> removeTripFavorite(Long tripFavoriteId) {
+    public ResponseEntity<CustomApiResponse<?>> removeTripFavorite(Long tripId) {
         // 현재 사용자 ID 조회
         String currentUserId = authenticationUserUtils.getCurrentUserId();
 
@@ -75,9 +81,10 @@ public class TripFavoriteServiceImpl implements TripFavoriteService {
         User user = userRepository.findById(Long.parseLong(currentUserId))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자가 존재하지 않습니다."));
 
-        // 즐겨찾기 항목 조회
-        TripFavorite tripFavorite = tripFavoriteRepository.findById(tripFavoriteId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 즐겨찾기 항목이 존재하지 않습니다."));
+        TripFavorite tripFavorite = tripFavoriteRepository.findByUserIdAndTripId(user,
+                        tripRepository.findById(tripId)
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "여행상품을 찾을 수 없습니다.")))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 여행 상품에 대한 리뷰를 찾을 수 없습니다."));
 
         // 즐겨찾기 삭제
         tripFavoriteRepository.delete(tripFavorite);
