@@ -58,4 +58,32 @@ public class PostFavoriteServiceImpl implements PostFavoriteService {
         return ResponseEntity.ok(CustomApiResponse.createSuccess(200, null, "게시글이 즐겨찾기에 추가되었습니다."));
     }
 
+    @Override
+    @Transactional
+    public ResponseEntity<CustomApiResponse<?>> removePostFavorite(Long postId) {
+        // 현재 사용자 ID 조회
+        String currentUserId = authenticationUserUtils.getCurrentUserId();
+        if (currentUserId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(CustomApiResponse.createFailWithout(401, "유효하지 않은 토큰입니다."));
+        }
+
+        // 사용자 조회
+        User user = userRepository.findById(Long.parseLong(currentUserId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."));
+
+        // 게시글 조회
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."));
+
+        // 즐겨찾기 데이터 조회
+        PostFavorite postFavorite = postFavoriteRepository.findByUserAndPost(user, post)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "즐겨찾기 데이터가 존재하지 않습니다."));
+
+        // 즐겨찾기 삭제
+        postFavoriteRepository.delete(postFavorite);
+
+        return ResponseEntity.ok(CustomApiResponse.createSuccess(200, null, "게시글 즐겨찾기가 해제되었습니다."));
+    }
+
 }
