@@ -4,10 +4,7 @@ import com.hsu.travelmaker.domain.post.entity.Post;
 import com.hsu.travelmaker.domain.post.entity.PostImage;
 import com.hsu.travelmaker.domain.post.repository.PostImageRepository;
 import com.hsu.travelmaker.domain.post.repository.PostRepository;
-import com.hsu.travelmaker.domain.post.web.dto.PostCreateDto;
-import com.hsu.travelmaker.domain.post.web.dto.PostListPageResponseDto;
-import com.hsu.travelmaker.domain.post.web.dto.PostListResponseDto;
-import com.hsu.travelmaker.domain.post.web.dto.PostResponseDto;
+import com.hsu.travelmaker.domain.post.web.dto.*;
 import com.hsu.travelmaker.domain.user.entity.User;
 import com.hsu.travelmaker.domain.user.repository.UserRepository;
 import com.hsu.travelmaker.global.response.CustomApiResponse;
@@ -130,6 +127,46 @@ public class PostServiceImpl implements PostService {
                 .build();
 
         return ResponseEntity.ok(CustomApiResponse.createSuccess(200, data, "게시글 목록 조회에 성공했습니다."));
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<CustomApiResponse<?>> updatePost(Long postId, PostUpdateDto dto) {
+        // 현재 사용자 ID 조회
+        String currentUserId = authenticationUserUtils.getCurrentUserId();
+        if (currentUserId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(CustomApiResponse.createFailWithout(401, "유효하지 않은 토큰입니다."));
+        }
+
+        // 게시글 조회
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."));
+
+        // 작성자인지 확인
+        if (!post.getUser().getUserId().equals(Long.parseLong(currentUserId))) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(CustomApiResponse.createFailWithout(403, "게시글을 수정할 권한이 없습니다."));
+        }
+
+        // 게시글 내용 수정
+        post.setPostTitle(dto.getPostTitle());
+        post.setPostContent(dto.getPostContent());
+        postRepository.save(post);
+
+        // 기존 이미지 삭제
+        postImageRepository.deleteByPostId(post);
+
+        // 새로운 이미지 추가
+        for (String imageUrl : dto.getPostImageUrls()) {
+            PostImage postImage = PostImage.builder()
+                    .postId(post)
+                    .postImageUrl(imageUrl)
+                    .build();
+            postImageRepository.save(postImage);
+        }
+
+        return ResponseEntity.ok(CustomApiResponse.createSuccess(200, null, "게시글과 이미지가 성공적으로 수정되었습니다."));
     }
 
 }
