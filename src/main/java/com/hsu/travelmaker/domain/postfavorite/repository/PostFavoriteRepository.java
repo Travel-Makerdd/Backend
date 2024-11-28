@@ -12,4 +12,5 @@ public interface PostFavoriteRepository extends JpaRepository<PostFavorite, Long
     boolean existsByUserAndPost(User user, Post post);
     Optional<PostFavorite> findByUserAndPost(User user, Post post);
     List<PostFavorite> findByUser(User user);
+    int countByPost(Post post);
 }

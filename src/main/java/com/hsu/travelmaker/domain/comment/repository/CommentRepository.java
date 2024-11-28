@@ -11,4 +11,5 @@ import java.util.List;
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     // 특정 게시글의 댓글 조회
     List<Comment> findByPost(Post post);
+    int countByPost(Post post);
 }

@@ -1,10 +1,12 @@
 package com.hsu.travelmaker.domain.post.service;
 
+import com.hsu.travelmaker.domain.comment.repository.CommentRepository;
 import com.hsu.travelmaker.domain.post.entity.Post;
 import com.hsu.travelmaker.domain.post.entity.PostImage;
 import com.hsu.travelmaker.domain.post.repository.PostImageRepository;
 import com.hsu.travelmaker.domain.post.repository.PostRepository;
 import com.hsu.travelmaker.domain.post.web.dto.*;
+import com.hsu.travelmaker.domain.postfavorite.repository.PostFavoriteRepository;
 import com.hsu.travelmaker.domain.user.entity.User;
 import com.hsu.travelmaker.domain.user.repository.UserRepository;
 import com.hsu.travelmaker.global.response.CustomApiResponse;
@@ -30,6 +32,8 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final PostImageRepository postImageRepository;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
+    private final PostFavoriteRepository postFavoriteRepository;
     private final AuthenticationUserUtils authenticationUserUtils;
 
     @Override
@@ -110,12 +114,18 @@ public class PostServiceImpl implements PostService {
                     .map(PostImage::getPostImageUrl)
                     .orElse(null);
 
+            // 댓글 수와 즐겨찾기 수 조회
+            int commentCount = commentRepository.countByPost(post);
+            int favoriteCount = postFavoriteRepository.countByPost(post);
+
             // 게시글 DTO 생성
             return PostListResponseDto.builder()
                     .postId(post.getPostId())
                     .postTitle(post.getPostTitle())
                     .postContentPreview(post.getPostContent().substring(0, Math.min(post.getPostContent().length(), 50))) // 내용 일부
                     .postImageUrl(firstImageUrl)
+                    .commentCount(commentCount)
+                    .favoriteCount(favoriteCount)
                     .build();
         }).collect(Collectors.toList());
 
