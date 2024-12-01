@@ -8,6 +8,7 @@ import com.hsu.travelmaker.domain.trip.repository.TripRepository;
 import com.hsu.travelmaker.domain.user.entity.User;
 import com.hsu.travelmaker.domain.user.repository.UserRepository;
 import com.hsu.travelmaker.domain.user.web.dto.SignInDto;
+import com.hsu.travelmaker.domain.user.web.dto.SignInResponseDto;
 import com.hsu.travelmaker.domain.user.web.dto.SignUpDto;
 import com.hsu.travelmaker.global.response.CustomApiResponse;
 import com.hsu.travelmaker.global.security.jwt.JwtTokenProvider;
@@ -28,8 +29,6 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final ProfileRepository profileRepository;
-    private final TripRepository tripRepository;
-    private final PostRepository postRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationUserUtils authenticationUserUtils; // 현재 로그인된 사용자 정보를 가져옴
@@ -91,7 +90,10 @@ public class UserServiceImpl implements UserService {
         // 토큰 생성
         String token = jwtTokenProvider.createToken(user.getUserId().toString());
 
-        return ResponseEntity.ok(CustomApiResponse.createSuccess(200, token, "로그인에 성공했습니다."));
+        // 응답 DTO 생성
+        SignInResponseDto responseDto = new SignInResponseDto(token, user.getUserNickname());
+
+        return ResponseEntity.ok(CustomApiResponse.createSuccess(200, responseDto, "로그인에 성공했습니다."));
     }
 
     @Override
