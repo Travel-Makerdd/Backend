@@ -5,7 +5,6 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -18,8 +17,8 @@ public class TripResponseDto {
     private Long tripId;
     private String tripTitle;
     private String tripDescription;
-    private Long userId; // 사용자 fk
-    private List<String> tripImageUrls;
+    private Long userId;
+    private List<String> tripImageUrls; // 이미지 스트림 URL 리스트
     private BigDecimal tripPrice;
     private LocalDate startDate;
     private LocalDate endDate;

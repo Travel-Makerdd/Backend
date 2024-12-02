@@ -1,6 +1,5 @@
 package com.hsu.travelmaker.domain.trip.service;
 
-import com.hsu.travelmaker.domain.trip.web.dto.TripCreateDto;
 import com.hsu.travelmaker.global.response.CustomApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,5 +20,6 @@ public interface TripService {
     ResponseEntity<CustomApiResponse<?>> getAllTrips();
     // 특정 여행 상품 조회
     ResponseEntity<CustomApiResponse<?>> getTripById(Long tripId);
-
+    // 특정 여행상품 이미지 조회
+    ResponseEntity<byte[]> getTripImage(Long tripId, String imageName);
 }
