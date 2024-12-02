@@ -1,14 +1,14 @@
 package com.hsu.travelmaker.domain.activity.web.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ActivityResponseDto {
     private String activityTime; // 활동 시간
     private String activityTitle; // 활동 제목

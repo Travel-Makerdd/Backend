@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -42,10 +43,10 @@ public class Trip extends BaseEntity{
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "trip_start", nullable = false)
-    private Date tripStart; // 여행 시작일
+    private LocalDate tripStart; // 여행 시작일
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "trip_end", nullable = false)
-    private Date tripEnd; // 여행 종료일
+    private LocalDate tripEnd; // 여행 종료일
 
 }

@@ -1,5 +1,8 @@
 package com.hsu.travelmaker.domain.trip.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hsu.travelmaker.domain.activity.entity.Activity;
 import com.hsu.travelmaker.domain.activity.repository.ActivityRepository;
 import com.hsu.travelmaker.domain.activity.web.dto.ActivityResponseDto;
@@ -21,10 +24,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +51,16 @@ public class TripServiceImpl implements TripService {
 
     @Override
     @Transactional
-    public ResponseEntity<CustomApiResponse<?>> createTrip(TripCreateDto dto) {
+    public ResponseEntity<CustomApiResponse<?>> createTrip(
+            String tripTitle,
+            String tripDescription,
+            BigDecimal tripPrice,
+            String startDate,
+            String endDate,
+            String schedulesJson,
+            List<MultipartFile> images
+    )
+    {
         // 현재 사용자 ID 조회
         String currentUserId = authenticationUserUtils.getCurrentUserId();
 
@@ -57,51 +73,91 @@ public class TripServiceImpl implements TripService {
         // 사용자 조회
         User user = userRepository.findById(Long.parseLong(currentUserId))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자가 존재하지 않습니다."));
+        try {
+            // 1. schedules JSON 파싱
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<ScheduleResponseDto> schedules = objectMapper.readValue(schedulesJson, new TypeReference<List<ScheduleResponseDto>>() {});
 
-        // 여행 상품 생성
-        Trip trip = Trip.builder()
-                .user(user)
-                .tripTitle(dto.getTripTitle())
-                .tripDescription(dto.getTripDescription())
-                .tripPrice(dto.getTripPrice())
-                .tripStart(dto.getStartDate())
-                .tripEnd(dto.getEndDate())
-                .build();
-
-        // Trip 저장
-        tripRepository.save(trip);
-
-        // 게시글 이미지 생성
-        for (String imageUrl : dto.getTripImageUrls()) {
-            TripImage tripImage = TripImage.builder()
-                    .tripId(trip)
-                    .tripImageUrl(imageUrl)
+            // 2. Trip 엔티티 생성 및 저장
+            Trip trip = Trip.builder()
+                    .user(user)
+                    .tripTitle(tripTitle)
+                    .tripDescription(tripDescription)
+                    .tripPrice(tripPrice)
+                    .tripStart(LocalDate.parse(startDate))
+                    .tripEnd(LocalDate.parse(endDate))
                     .build();
-            tripImageRepository.save(tripImage);
-        }
+            tripRepository.save(trip);
 
-        // 일정 및 활동 추가
-        for (ScheduleResponseDto scheduleDto : dto.getSchedules()) {
-            Schedule schedule = new Schedule();
-            schedule.setScheduleDay(scheduleDto.getScheduleDay());
-            schedule.setTrip(trip);  // 일정에 해당 여행 상품 설정
+            // 3. 이미지 파일 저장
+            if (images != null && !images.isEmpty()) {
+                String uploadDir = System.getProperty("user.dir") + "/src/main/resources/images/";
+                File directory = new File(uploadDir);
+                if (!directory.exists()) {
+                    directory.mkdirs(); // 디렉토리 생성
+                }
 
-            // 활동 추가
-            for (ActivityResponseDto activityDto : scheduleDto.getActivities()) {
-                Activity activity = new Activity();
-                activity.setActivityTime(activityDto.getActivityTime());
-                activity.setActivityTitle(activityDto.getActivityTitle());
-                activity.setActivityContent(activityDto.getActivityContent());
-                activity.setActivityExpense(activityDto.getActivityExpense());
-                activity.setSchedule(schedule);  // 활동에 해당 일정 설정
-                schedule.getActivities().add(activity);  // 일정에 활동 추가
+                for (MultipartFile image : images) {
+                    if (!image.isEmpty()) {
+                        // 1. 업로드 시간 기반 파일 이름 생성
+                        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmssSSS").format(new Date()); // "20241201_103015123" 형식
+                        String fileExtension = ""; // 확장자 초기화
+                        String originalFilename = image.getOriginalFilename();
+                        // 2. 파일 확장자 추출
+                        if (originalFilename != null && originalFilename.contains(".")) {
+                            fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+                        }
+
+                        // 3. 최종 파일 이름 생성
+                        String newFilename = timeStamp + fileExtension; // 예: "20241201_103015123.png"
+
+                        // 4. 저장 경로 생성
+                        String filePath = uploadDir + newFilename;
+                        File dest = new File(filePath);
+                        image.transferTo(dest);
+
+                        String imageUrl = "http://localhost:8080/images/" + newFilename;
+
+                        TripImage tripImage = TripImage.builder()
+                                .tripId(trip)
+                                .images(imageUrl)
+                                .build();
+                        tripImageRepository.save(tripImage);
+                    }
+                }
             }
 
-            // Schedule 저장
-            scheduleRepository.save(schedule);
+            // 4. 일정 및 활동 저장
+            for (ScheduleResponseDto scheduleDto : schedules) {
+                Schedule schedule = new Schedule();
+                schedule.setScheduleDay(scheduleDto.getScheduleDay());
+                schedule.setTrip(trip);
+
+                for (ActivityResponseDto activityDto : scheduleDto.getActivities()) {
+                    Activity activity = new Activity();
+                    activity.setActivityTime(activityDto.getActivityTime());
+                    activity.setActivityTitle(activityDto.getActivityTitle());
+                    activity.setActivityContent(activityDto.getActivityContent());
+                    activity.setActivityExpense(activityDto.getActivityExpense());
+                    activity.setSchedule(schedule);
+                    schedule.getActivities().add(activity);
+                }
+
+                scheduleRepository.save(schedule);
+            }
+
+            // 5. 성공 응답 반환
+            return ResponseEntity.ok(CustomApiResponse.createSuccess(201, null, "여행 상품 및 이미지 업로드 성공"));
+
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(CustomApiResponse.createFailWithout(400, "schedules JSON 파싱 오류: " + e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CustomApiResponse.createFailWithout(500, "서버 오류: " + e.getMessage()));
         }
-        return ResponseEntity.ok(CustomApiResponse.createSuccess(201, null, "여행 상품이 성공적으로 생성되었습니다."));
     }
+
     @Override
     @Transactional
     public ResponseEntity<CustomApiResponse<?>> getAllTrips() {
@@ -132,7 +188,7 @@ public class TripServiceImpl implements TripService {
                         .startDate(trip.getTripStart())
                         .endDate(trip.getTripEnd())
                         .tripImageUrls(tripImageRepository.findByTripId(trip).stream()
-                                .map(TripImage::getTripImageUrl)
+                                .map(TripImage::getImages)
                                 .collect(Collectors.toList())) // 여행 상품 이미지 URL들
                         .build())
                 .collect(Collectors.toList());
@@ -161,7 +217,7 @@ public class TripServiceImpl implements TripService {
         // 해당 여행상품에 연결된 이미지 URL 조회
         List<String> tripImageUrls = tripImageRepository.findByTripId(trip)
                 .stream()
-                .map(TripImage::getTripImageUrl)
+                .map(TripImage::getImages)
                 .collect(Collectors.toList());
 
         // 해당 여행 상품에 대한 일정 조회 (일차별로 그룹화)
