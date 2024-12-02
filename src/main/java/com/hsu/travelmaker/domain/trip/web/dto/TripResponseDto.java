@@ -4,6 +4,7 @@ import com.hsu.travelmaker.domain.schedule.web.dto.ScheduleResponseDto;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,7 @@ public class TripResponseDto {
     private Long userId; // 사용자 fk
     private List<String> tripImageUrls;
     private BigDecimal tripPrice;
-    private Date startDate;
-    private Date endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private Map<Integer, List<ScheduleResponseDto>> schedules;
 }

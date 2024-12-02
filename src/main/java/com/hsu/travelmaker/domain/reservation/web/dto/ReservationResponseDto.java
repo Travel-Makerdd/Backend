@@ -3,6 +3,7 @@ package com.hsu.travelmaker.domain.reservation.web.dto;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -18,6 +19,6 @@ public class ReservationResponseDto {
     private String tripDescription;
     private Long userId; // 사용자 fk
     private BigDecimal tripPrice;
-    private Date startDate;
-    private Date endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
 }

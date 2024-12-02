@@ -1,15 +1,13 @@
 package com.hsu.travelmaker.domain.schedule.web.dto;
 
 import com.hsu.travelmaker.domain.activity.web.dto.ActivityResponseDto;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class ScheduleResponseDto {
