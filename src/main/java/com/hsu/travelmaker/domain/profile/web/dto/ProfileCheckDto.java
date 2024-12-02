@@ -11,7 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ProfileCheckDto {
     private Long userId;
-    private String profileName;
     private Role profileRole;
     private String profileBio;
     private String profileStyle;

@@ -10,10 +10,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class ProfileUpdateDto {
-
-    @NotBlank(message = "이름을 입력해주세요.")
-    private String profileName;
-
     @NotBlank(message = "역할을 입력해주세요.")
     private Role profileRole;
 

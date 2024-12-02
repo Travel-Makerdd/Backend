@@ -23,9 +23,6 @@ public class Profile extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user; // 사용자 FK
 
-    @Column(name = "profile_name", nullable = false)
-    private String profileName; // 이름
-
     @Column(name = "profile_role", nullable = false)
     @Enumerated(EnumType.STRING)
     private Role profileRole; // 역할

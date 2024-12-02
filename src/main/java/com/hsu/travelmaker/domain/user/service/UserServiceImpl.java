@@ -63,7 +63,6 @@ public class UserServiceImpl implements UserService {
         // 빈 프로필 생성 및 저장
         Profile profile = Profile.builder()
                 .user(user)
-                .profileName(user.getUserNickname())
                 .profileRole(Role.DEFAULT)
                 .profileBio("")
                 .profileStyle("")

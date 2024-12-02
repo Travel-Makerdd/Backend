@@ -43,7 +43,6 @@ public class ProfileServiceImpl implements ProfileService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "프로필이 존재하지 않습니다."));
 
         // 프로필 정보 업데이트
-        profile.setProfileName(dto.getProfileName());
         profile.setProfileRole(dto.getProfileRole());
         profile.setProfileBio(dto.getProfileBio());
         profile.setProfileStyle(dto.getProfileStyle());
@@ -78,7 +77,6 @@ public class ProfileServiceImpl implements ProfileService {
         // 반환 데이터
         ProfileCheckDto data = new ProfileCheckDto();
         data.setUserId(profile.getUser().getUserId());
-        data.setProfileName(profile.getUser().getUserNickname());
         data.setProfileRole(profile.getProfileRole());
         data.setProfileBio(profile.getProfileBio());
         data.setProfileStyle(profile.getProfileStyle());
