@@ -33,4 +33,5 @@ public class TripController {
         return tripService.getTripById(tripId);
     }
 
+
 }
