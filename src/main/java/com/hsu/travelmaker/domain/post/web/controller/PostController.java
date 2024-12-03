@@ -7,6 +7,10 @@ import com.hsu.travelmaker.global.response.CustomApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/post")
@@ -17,12 +21,17 @@ public class PostController {
 
     // 게시글 생성
     @PostMapping("/create")
-    public ResponseEntity<CustomApiResponse<?>> createPost(@RequestBody PostCreateDto dto) {
-        return postService.createPost(dto);
+    public ResponseEntity<CustomApiResponse<?>> createPost(
+            @RequestParam("postTitle") String postTitle,
+            @RequestParam("postContent") String postContent,
+            @RequestParam(value = "images", required = false) List<MultipartFile> postImages
+    ) throws IOException {
+        return postService.createPost(postTitle, postContent, postImages);
     }
 
+
     //게시글 상세 조회
-    @GetMapping("/{postId}")
+    @GetMapping("/check/{postId}")
     public ResponseEntity<CustomApiResponse<?>> getPostDetail(@PathVariable Long postId) {
         return postService.getPostDetail(postId);
     }
@@ -37,8 +46,23 @@ public class PostController {
 
     // 게시글 수정
     @PostMapping("/update/{postId}")
-    public ResponseEntity<CustomApiResponse<?>> updatePost(@PathVariable Long postId, @RequestBody PostUpdateDto dto) {
-        return postService.updatePost(postId, dto);
+    public ResponseEntity<CustomApiResponse<?>> updatePost(
+            @PathVariable Long postId,
+            @RequestParam("postTitle") String postTitle,
+            @RequestParam("postContent") String postContent,
+            @RequestParam(value = "postImages", required = false) List<MultipartFile> postImages) throws IOException {
+
+        return postService.updatePost(postId, postTitle, postContent, postImages);
+    }
+
+
+    // 특정 게시글 이미지 조회
+    @GetMapping("/check/{postId}/image/{imageName}")
+    public ResponseEntity<byte[]> getPostImage(
+            @PathVariable Long postId,
+            @PathVariable String imageName
+    ) {
+        return postService.getPostImage(postId, imageName);
     }
 
 }
