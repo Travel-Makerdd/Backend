@@ -1,7 +1,5 @@
 package com.hsu.travelmaker.domain.destination.entity;
 
-
-import com.hsu.travelmaker.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
