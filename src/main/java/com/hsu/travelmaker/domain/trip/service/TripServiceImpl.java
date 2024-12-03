@@ -212,6 +212,14 @@ public class TripServiceImpl implements TripService {
     @Override
     @Transactional
     public ResponseEntity<CustomApiResponse<?>> getTripById(Long tripId) {
+        // 현재 사용자 ID 조회
+        String currentUserId = authenticationUserUtils.getCurrentUserId();
+
+        // 유효한 사용자 확인
+        if (currentUserId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(CustomApiResponse.createFailWithout(401, "유효하지 않은 토큰이거나, 사용자 정보가 존재하지 않습니다."));
+        }
         try {
             // 여행 상품 조회
             Trip trip = tripRepository.findByTripId(tripId)
