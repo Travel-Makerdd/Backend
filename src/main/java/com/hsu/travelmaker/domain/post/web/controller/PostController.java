@@ -46,9 +46,15 @@ public class PostController {
 
     // 게시글 수정
     @PostMapping("/update/{postId}")
-    public ResponseEntity<CustomApiResponse<?>> updatePost(@PathVariable Long postId, @RequestBody PostUpdateDto dto) {
-        return postService.updatePost(postId, dto);
+    public ResponseEntity<CustomApiResponse<?>> updatePost(
+            @PathVariable Long postId,
+            @RequestParam("postTitle") String postTitle,
+            @RequestParam("postContent") String postContent,
+            @RequestParam(value = "postImages", required = false) List<MultipartFile> postImages) throws IOException {
+
+        return postService.updatePost(postId, postTitle, postContent, postImages);
     }
+
 
     // 특정 게시글 이미지 조회
     @GetMapping("/check/{postId}/image/{imageName}")

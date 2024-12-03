@@ -13,6 +13,6 @@ public interface PostService {
     ResponseEntity<CustomApiResponse<?>> createPost(String postTitle, String postContent, List<MultipartFile> postImages) throws IOException;
     ResponseEntity<CustomApiResponse<?>> getPostDetail(Long postId);
     ResponseEntity<CustomApiResponse<?>> getPostAll(int page, int size);
-    ResponseEntity<CustomApiResponse<?>> updatePost(Long postId, PostUpdateDto dto);
+    ResponseEntity<CustomApiResponse<?>> updatePost(Long postId, String postTitle, String postContent, List<MultipartFile> postImages) throws IOException;
     ResponseEntity<byte[]> getPostImage(Long postId, String imageName);
 }
