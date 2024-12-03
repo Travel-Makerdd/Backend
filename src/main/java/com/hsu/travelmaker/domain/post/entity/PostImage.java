@@ -23,6 +23,5 @@ public class PostImage {
     private Post postId; // 게시글 FK
 
     @Column(name = "post_image_url", nullable = false)
-    private String postImageUrl; // 게시글 제목
-
+    private String images; // 이미지 URL
 }

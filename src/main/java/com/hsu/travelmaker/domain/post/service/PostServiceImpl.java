@@ -16,12 +16,22 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,7 +48,11 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public ResponseEntity<CustomApiResponse<?>> createPost(PostCreateDto dto) {
+    public ResponseEntity<CustomApiResponse<?>> createPost(
+            String postTitle,
+            String postContent,
+            List<MultipartFile> postImages
+    ) throws IOException {
         // 현재 사용자 ID 조회
         String currentUserId = authenticationUserUtils.getCurrentUserId();
 
@@ -55,19 +69,49 @@ public class PostServiceImpl implements PostService {
         // 게시글 생성
         Post post = Post.builder()
                 .user(user)
-                .postTitle(dto.getPostTitle())
-                .postContent(dto.getPostContent())
+                .postTitle(postTitle)
+                .postContent(postContent)
                 .build();
 
         postRepository.save(post);
 
-        // 게시글 이미지 생성
-        for (String imageUrl : dto.getPostImageUrls()) {
-            PostImage postImage = PostImage.builder()
-                    .postId(post)
-                    .postImageUrl(imageUrl)
-                    .build();
-            postImageRepository.save(postImage);
+        // 이미지 파일 저장
+        if (postImages != null && !postImages.isEmpty()) {
+            String uploadDir = System.getProperty("user.dir") + "/src/main/resources/images/";
+            File directory = new File(uploadDir);
+            if (!directory.exists()) {
+                directory.mkdirs(); // 디렉토리 생성
+            }
+
+            for (MultipartFile image : postImages) {
+                if (!image.isEmpty()) {
+                    // 1. 업로드 시간 기반 파일 이름 생성
+                    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmssSSS").format(new Date());
+                    String fileExtension = ""; // 확장자 초기화
+                    String originalFilename = image.getOriginalFilename();
+                    // 2. 파일 확장자 추출
+                    if (originalFilename != null && originalFilename.contains(".")) {
+                        fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+                    }
+
+                    // 3. 최종 파일 이름 생성
+                    String newFilename = timeStamp + fileExtension;
+
+                    // 4. 저장 경로 생성
+                    String filePath = uploadDir + newFilename;
+                    File dest = new File(filePath);
+                    image.transferTo(dest);
+
+                    String imageUrl = "http://localhost:8080/images/" + newFilename;
+
+                    // 게시글 이미지 생성
+                    PostImage postImage = PostImage.builder()
+                            .postId(post)
+                            .images(imageUrl)
+                            .build();
+                    postImageRepository.save(postImage);
+                }
+            }
         }
 
         return ResponseEntity.ok(CustomApiResponse.createSuccess(201, null, "게시글이 성공적으로 생성되었습니다."));
@@ -83,7 +127,7 @@ public class PostServiceImpl implements PostService {
         // 해당 게시글에 연결된 이미지 URL 조회
         List<String> postImageUrls = postImageRepository.findByPostId(post)
                 .stream()
-                .map(PostImage::getPostImageUrl)
+                .map(postImage -> "/api/post/check/" + post.getPostId() + "/image/" + extractFilename(postImage.getImages()))
                 .collect(Collectors.toList());
 
         // 반환 데이터
@@ -92,7 +136,7 @@ public class PostServiceImpl implements PostService {
                 .postTitle(post.getPostTitle())
                 .postContent(post.getPostContent())
                 .userId(post.getUser().getUserId())
-                .postImageUrls(postImageUrls)
+                .postImageUrls(postImageUrls) // 이미지 URL 포함
                 .build();
 
         return ResponseEntity.ok(CustomApiResponse.createSuccess(200, data, "게시글 조회에 성공했습니다."));
@@ -111,7 +155,7 @@ public class PostServiceImpl implements PostService {
         List<PostListResponseDto> postList = postPage.getContent().stream().map(post -> {
             // 첫 번째 이미지 URL 가져오기
             String firstImageUrl = postImageRepository.findFirstByPostId(post)
-                    .map(PostImage::getPostImageUrl)
+                    .map(PostImage::getImages)
                     .orElse(null);
 
             // 댓글 수와 즐겨찾기 수 조회
@@ -171,7 +215,7 @@ public class PostServiceImpl implements PostService {
         for (String imageUrl : dto.getPostImageUrls()) {
             PostImage postImage = PostImage.builder()
                     .postId(post)
-                    .postImageUrl(imageUrl)
+                    .images(imageUrl)
                     .build();
             postImageRepository.save(postImage);
         }
@@ -179,4 +223,40 @@ public class PostServiceImpl implements PostService {
         return ResponseEntity.ok(CustomApiResponse.createSuccess(200, null, "게시글과 이미지가 성공적으로 수정되었습니다."));
     }
 
+    @Override
+    @Transactional
+    public ResponseEntity<byte[]> getPostImage(Long postId, String imageName) {
+        try {
+            // 파일 경로 생성
+            Path filePath = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "images", imageName);
+
+            // 파일이 존재하지 않으면 404 반환
+            if (!Files.exists(filePath)) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(null);
+            }
+
+            // 파일을 읽어서 바이너리 데이터를 반환
+            byte[] imageBytes = Files.readAllBytes(filePath);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(Files.probeContentType(filePath) != null
+                    ? MediaType.parseMediaType(Files.probeContentType(filePath))
+                    : MediaType.APPLICATION_OCTET_STREAM); // 파일 유형 설정
+            headers.setContentLength(imageBytes.length); // 파일 크기 설정
+
+            return new ResponseEntity<>(imageBytes, headers, HttpStatus.OK);
+
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
+
+    private String extractFilename(String imageUrl) {
+        return imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+    }
+
 }
+
+
