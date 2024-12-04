@@ -14,6 +14,7 @@ import com.hsu.travelmaker.domain.trip.entity.TripImage;
 import com.hsu.travelmaker.domain.trip.repository.TripImageRepository;
 import com.hsu.travelmaker.domain.trip.repository.TripRepository;
 import com.hsu.travelmaker.domain.trip.web.dto.TripResponseDto;
+import com.hsu.travelmaker.domain.tripfavorite.repository.TripFavoriteRepository;
 import com.hsu.travelmaker.domain.user.entity.User;
 import com.hsu.travelmaker.domain.user.repository.UserRepository;
 import com.hsu.travelmaker.global.response.CustomApiResponse;
@@ -52,7 +53,7 @@ public class TripServiceImpl implements TripService {
     private final ActivityRepository activityRepository;
     private final TripImageRepository tripImageRepository;
     private final String uploadDir = System.getProperty("user.dir") + "/src/main/resources/images/";
-
+    private final TripFavoriteRepository tripFavoriteRepository;
 
     @Override
     @Transactional
@@ -220,6 +221,10 @@ public class TripServiceImpl implements TripService {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(CustomApiResponse.createFailWithout(401, "유효하지 않은 토큰이거나, 사용자 정보가 존재하지 않습니다."));
         }
+        // 사용자 조회
+        User user = userRepository.findById(Long.parseLong(currentUserId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자가 존재하지 않습니다."));
+
         try {
             // 여행 상품 조회
             Trip trip = tripRepository.findByTripId(tripId)
@@ -246,6 +251,8 @@ public class TripServiceImpl implements TripService {
                                         .collect(Collectors.toList());
                                 return new ScheduleResponseDto(schedule.getScheduleId(), trip.getTripTitle(), schedule.getScheduleDay(), activityDtos);
                             }, Collectors.toList())));
+            // 즐겨찾기 여부 확인
+            boolean isFavorite = tripFavoriteRepository.findByUserIdAndTripId(user, trip).isPresent();
 
             // TripResponseDto 생성
             TripResponseDto data = TripResponseDto.builder()
@@ -258,6 +265,7 @@ public class TripServiceImpl implements TripService {
                     .startDate(trip.getTripStart())
                     .endDate(trip.getTripEnd())
                     .schedules(scheduleGroupedByDay)
+                    .isFavorite(isFavorite)
                     .build();
 
             // 성공 응답 반환

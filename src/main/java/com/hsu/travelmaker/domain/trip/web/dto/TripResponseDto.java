@@ -23,4 +23,5 @@ public class TripResponseDto {
     private LocalDate startDate;
     private LocalDate endDate;
     private Map<Integer, List<ScheduleResponseDto>> schedules;
+    private boolean isFavorite;
 }
