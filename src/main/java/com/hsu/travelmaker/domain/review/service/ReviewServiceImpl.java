@@ -1,5 +1,6 @@
 package com.hsu.travelmaker.domain.review.service;
 
+import com.hsu.travelmaker.domain.reservation.repository.ReservationRepository;
 import com.hsu.travelmaker.domain.review.entity.Review;
 import com.hsu.travelmaker.domain.review.repository.ReviewRepository;
 import com.hsu.travelmaker.domain.review.web.dto.ReviewCreateDto;
@@ -28,6 +29,8 @@ public class ReviewServiceImpl implements ReviewService{
     private final UserRepository userRepository;
     private final ReviewRepository reviewRepository;
     private final TripRepository tripRepository;
+    private final ReservationRepository reservationRepository;
+
 
     @Override
     @Transactional
@@ -48,6 +51,13 @@ public class ReviewServiceImpl implements ReviewService{
         // 여행상품 조회
         Trip trip = tripRepository.findById(dto.getTripId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "여행상품을 찾을 수 없습니다."));
+
+        // 사용자가 해당 여행 상품을 예약했는지 확인
+        boolean reservationExists = reservationRepository.findByUserIdAndTripId(user, trip).isPresent();
+        if (!reservationExists) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(CustomApiResponse.createFailWithout(403, "해당 여행 상품을 예약한 사용자만 리뷰를 작성할 수 있습니다."));
+        }
 
         // 사용자가 해당 여행 상품에 대한 리뷰를 이미 작성했는지 확인
         boolean reviewExists = reviewRepository.findByUserIdAndTripId(user, trip).isPresent();
