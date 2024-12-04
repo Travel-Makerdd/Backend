@@ -120,9 +120,21 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional(readOnly = true)
     public ResponseEntity<CustomApiResponse<?>> getPostDetail(Long postId) {
+        // 현재 사용자 ID 조회
+        String currentUserId = authenticationUserUtils.getCurrentUserId();
+
         // 게시글 조회
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."));
+
+        // 현재 사용자 ID가 유효한 경우 즐겨찾기 여부 확인
+        boolean isFavorite = false;
+        if (currentUserId != null) {
+            User user = userRepository.findById(Long.parseLong(currentUserId))
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."));
+
+            isFavorite = postFavoriteRepository.existsByUserAndPost(user, post);
+        }
 
         // 해당 게시글에 연결된 이미지 URL 조회
         List<String> postImageUrls = postImageRepository.findByPostId(post)
@@ -136,11 +148,13 @@ public class PostServiceImpl implements PostService {
                 .postTitle(post.getPostTitle())
                 .postContent(post.getPostContent())
                 .userId(post.getUser().getUserId())
-                .postImageUrls(postImageUrls) // 이미지 URL 포함
+                .postImageUrls(postImageUrls)
+                .isFavorite(isFavorite) // 즐겨찾기 상태 추가
                 .build();
 
         return ResponseEntity.ok(CustomApiResponse.createSuccess(200, data, "게시글 조회에 성공했습니다."));
     }
+
 
     @Override
     @Transactional(readOnly = true)

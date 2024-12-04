@@ -15,4 +15,5 @@ public class PostResponseDto {
     private String postContent;
     private Long userId;
     private List<String> postImageUrls;
+    private boolean isFavorite;
 }
