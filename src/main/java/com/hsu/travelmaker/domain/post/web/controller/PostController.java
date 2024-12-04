@@ -48,11 +48,9 @@ public class PostController {
     @PostMapping("/update/{postId}")
     public ResponseEntity<CustomApiResponse<?>> updatePost(
             @PathVariable Long postId,
-            @RequestParam("postTitle") String postTitle,
-            @RequestParam("postContent") String postContent,
-            @RequestParam(value = "postImages", required = false) List<MultipartFile> postImages) throws IOException {
-
-        return postService.updatePost(postId, postTitle, postContent, postImages);
+            @ModelAttribute PostUpdateDto postUpdateDto
+    ) throws IOException {
+        return postService.updatePost(postId, postUpdateDto);
     }
 
 

@@ -5,21 +5,16 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class PostUpdateDto {
-
-    @NotBlank(message = "게시글 제목을 입력해주세요.")
-    private String postTitle;
-
-    @NotBlank(message = "게시글 내용을 입력해주세요.")
-    private String postContent;
-
-    @NotEmpty(message = "게시글 이미지를 추가해주세요.")
-    private List<String> postImageUrls;
-
+    private Optional<String> postTitle = Optional.empty();
+    private Optional<String> postContent = Optional.empty();
+    private Optional<List<MultipartFile>> postImages = Optional.empty();
 }

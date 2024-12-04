@@ -189,9 +189,7 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public ResponseEntity<CustomApiResponse<?>> updatePost(
             Long postId,
-            String postTitle,
-            String postContent,
-            List<MultipartFile> postImages
+            PostUpdateDto postUpdateDto
     ) throws IOException {
         // 현재 사용자 ID 조회
         String currentUserId = authenticationUserUtils.getCurrentUserId();
@@ -210,45 +208,44 @@ public class PostServiceImpl implements PostService {
                     .body(CustomApiResponse.createFailWithout(403, "게시글을 수정할 권한이 없습니다."));
         }
 
-        // 게시글 내용 수정
-        post.setPostTitle(postTitle);
-        post.setPostContent(postContent);
+        // 제목 수정
+        postUpdateDto.getPostTitle().ifPresent(post::setPostTitle);
+
+        // 내용 수정
+        postUpdateDto.getPostContent().ifPresent(post::setPostContent);
+
+        // 기존 게시글 저장
         postRepository.save(post);
 
-        // 기존 이미지 삭제
-        postImageRepository.deleteByPostId(post);
+        // 이미지 수정
+        if (postUpdateDto.getPostImages().isPresent() && !postUpdateDto.getPostImages().get().isEmpty()) {
+            // 기존 이미지 삭제
+            postImageRepository.deleteByPostId(post);
 
-        // 새 이미지 파일 저장
-        if (postImages != null && !postImages.isEmpty()) {
-            String uploadDir = System.getProperty("user.dir") + "/src/main/resources/images/";  // static/images 폴더로 변경
+            // 새 이미지 파일 저장
+            String uploadDir = System.getProperty("user.dir") + "/src/main/resources/images/";
             File directory = new File(uploadDir);
             if (!directory.exists()) {
                 directory.mkdirs(); // 디렉토리 생성
             }
 
-            for (MultipartFile image : postImages) {
+            for (MultipartFile image : postUpdateDto.getPostImages().get()) {
                 if (!image.isEmpty()) {
                     // 업로드 시간 기반 파일 이름 생성
                     String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmssSSS").format(new Date());
-                    String fileExtension = ""; // 확장자 초기화
+                    String fileExtension = "";
                     String originalFilename = image.getOriginalFilename();
-                    // 파일 확장자 추출
                     if (originalFilename != null && originalFilename.contains(".")) {
                         fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
                     }
 
-                    // 최종 파일 이름 생성
                     String newFilename = timeStamp + fileExtension;
-
-                    // 저장 경로 생성
                     String filePath = uploadDir + newFilename;
                     File dest = new File(filePath);
                     image.transferTo(dest); // 파일 저장
 
-                    // 이미지 URL 생성
                     String imageUrl = "http://localhost:8080/images/" + newFilename;
 
-                    // 새 게시글 이미지 추가
                     PostImage postImage = PostImage.builder()
                             .postId(post)
                             .images(imageUrl)
@@ -260,7 +257,6 @@ public class PostServiceImpl implements PostService {
 
         return ResponseEntity.ok(CustomApiResponse.createSuccess(200, null, "게시글과 이미지가 성공적으로 수정되었습니다."));
     }
-
 
     @Override
     @Transactional
