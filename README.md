@@ -62,3 +62,20 @@
 3. **이슈 닫기**
     - 해당 이슈가 해결되면 PR과 함께 이슈 닫기 ( 예 : `close #1` )
     - 이슈 닫기 메시지를 통해 해결 방법 간략히 설명
+
+<br>
+
+## 📄 데이터베이스 초기화
+
+### SQL 스크립트 위치
+- `src/sql/initialize-database.sql`
+
+### 목적
+- `destination` 테이블에 여행지 설명 추가
+- `destination_image` 테이블에 각 여행지의 이미지 URL 삽입
+
+### 사용 방법
+1. **MySQL 서버 실행**: MySQL 서버가 실행 중인지 확인
+2. **SQL 스크립트 실행**:
+   ```bash
+   mysql -u [사용자이름] -p [데이터베이스이름] < src/sql/initialize-database.sql
