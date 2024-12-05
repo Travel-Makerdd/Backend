@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import static com.hsu.travelmaker.domain.profile.entity.Role.DEFAULT;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -63,8 +65,9 @@ public class UserServiceImpl implements UserService {
         // 빈 프로필 생성 및 저장
         Profile profile = Profile.builder()
                 .user(user)
-                .profileRole(Role.DEFAULT)
                 .profileBio("")
+                .profileRole(DEFAULT)
+                .profileName(dto.getUserNickname())
                 .profileStyle("")
                 .profileFavorite("")
                 .build();
