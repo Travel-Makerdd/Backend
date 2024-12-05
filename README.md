@@ -68,7 +68,7 @@
 ## 📄 데이터베이스 초기화
 
 ### SQL 스크립트 위치
-- `src/sql/initialize-database.sql`
+- `src/sql/seed-destination.sql`
 
 ### 목적
 - `destination` 테이블에 여행지 설명 추가
